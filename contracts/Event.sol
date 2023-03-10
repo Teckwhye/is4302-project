@@ -27,6 +27,8 @@ contract Event {
         // require creation fee in terms of tokens?
         // require(msg.sender == platformOwner/seller?)
 
+        // require input validation for parameters Eg. datetime
+
         eventObj memory newEvent = eventObj(
             title,
             venue,
