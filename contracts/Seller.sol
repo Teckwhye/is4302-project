@@ -27,6 +27,7 @@ contract Seller {
 
     // function applyPermissionToList(Platform platformContract) public {
     //     platformContract.applyPermission(address(this));
+    //     testing
     // }
 
     // function changeSellerStatus(Platform platformContract, sellerStatus newStatus) public view () {
