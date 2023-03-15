@@ -34,4 +34,8 @@ contract Account {
         return accounts[addr].state;
     }
 
+    function viewAccountRegistered(address addr) public view returns(bool registered) {
+        return accounts[addr].registered;
+    } 
+
 }
