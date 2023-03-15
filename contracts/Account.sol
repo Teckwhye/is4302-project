@@ -30,5 +30,8 @@ contract Account {
         accounts[msg.sender].registered = true; // updatees the field to make an account valid
     }
 
+    function viewAccountState() public view returns (status state) {
+        return accounts[msg.sender].state;
+    }
 
 }
