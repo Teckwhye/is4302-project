@@ -1,45 +1,35 @@
 pragma solidity ^0.5.0;
-//import "./Buyer.sol";
-//import "./Platform.sol";
+
+import "./Account.sol";
 
 contract Seller {
-    //Buyer buyerContract;
-    //Platform platformContract;
-    sellerStatus status;
-    address _owner;
-    mapping(address => uint256) eventList;
+    Account accountContract;
+    mapping(uint256 => address) eventList; // list eventID => eventAddr
 
-    enum sellerStatus {
-        unverified,
-        verified
+    constructor (Account accountAddr) public {
+        accountContract = accountAddr;
+    }
+    
+    modifier isSeller(address addr) {
+        require(accountContract.viewAccountState() == Account.status.verified,"You're not verified as a Seller");
+        _;
     }
 
-    // constructor (Buyer buyerAddr, Platform platformAddr) public {
-    //     buyerContract = buyerAddr;
 
-    //     status = sellerStatus.unverified;
-    //     _owner = msg.sender;
-    // }
-
-    function checkStatus() public view returns (sellerStatus) {
-        return status;
-    }
-
-    // function applyPermissionToList(Platform platformContract) public {
-    //     platformContract.applyPermission(address(this));
-    //     testing
+    // function applyPermissionToList(Address sellerAddr) public {
+    //     platformContract.applyPermission(sellerAddr);
+    //     
     // }
 
     // function changeSellerStatus(Platform platformContract, sellerStatus newStatus) public view () {
-    //     require(msg.sender != _owner,"Cannot change own status!");
-    //     require(msg.sender == platformContract, "Only platform can change status!");
-    //     status = newStatus;
+    //     require(accountContract.viewAccountState() == Account.status.pending,"You've yet to apply for permission to list");
+    //    
+    //    
     // }
 
-    // function listEvent(uint256 eventId, address eventAddr) public view () {
-    //     require(msg.sender == _owner,"Only original seller can list event.");
-    //     list[eventId] = eventAddr;
-    // }
+    function listEvent(uint256 eventId, address eventAddr) public isSeller( msg.sender) {
+        eventList[eventId] = eventAddr;
+    }
 
 
 }
