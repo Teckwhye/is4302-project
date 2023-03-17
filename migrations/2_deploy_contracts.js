@@ -1,5 +1,5 @@
 const Event = artifacts.require("Event");
-const ConcertToken = artifacts.require("ConcertToken");
+const EventToken = artifacts.require("EventToken");
 
 module.exports = (deployer, network, account) => {
     deployer.deploy(ConcertToken);
