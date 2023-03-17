@@ -61,8 +61,8 @@ contract ERC20 {
     mapping(address => uint256) balances;
     
     
-    string public constant name = "ConcertToken";
-    string public constant symbol = "CT";
+    string public constant name = "EventToken";
+    string public constant symbol = "ET";
     uint8 public constant decimals = 18;
     uint256 totalSupply_;
   
