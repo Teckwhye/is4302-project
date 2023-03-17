@@ -13,12 +13,12 @@ contract Account {
 
     mapping (address => account) accounts;
 
-    /* Ensures an account is registered on the platform */
+    /* Ensures an account is allowed to list on the platform */
     function verifyAccount(address addr) public {
         accounts[addr].state = status.verified;
     }
 
-    /* View state of an account */
+    /* View account verification state*/
     function viewAccountState(address addr) public view returns (status state) {
         return accounts[addr].state;
     }
