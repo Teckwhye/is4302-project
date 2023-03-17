@@ -23,4 +23,11 @@ contract Account {
         return accounts[addr].state;
     }
     
+    function getUnverifiedStatus() public pure returns (status state) {
+        return status.unverified;
+    }
+
+    function getVerifiedStatus() public pure returns (status state) {
+        return status.verified;
+    }
 }
