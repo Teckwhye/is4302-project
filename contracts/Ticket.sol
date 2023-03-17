@@ -11,11 +11,11 @@ contract Ticket {
     enum category {floor, standard, vip}
 
     /**
-     * @param owner     address of the owner of the ticket
-     * @param evnt      address of the event the ticket belongs to
-     * @param price     Price of ticket in tokens
-     * @param cat       category of ticket 
-     * @param seatid    assigned seat/zone 
+     * param owner     address of the owner of the ticket
+     * param evnt      address of the event the ticket belongs to
+     * param price     Price of ticket in tokens
+     * param cat       category of ticket 
+     * param seatid    assigned seat/zone 
      */
     struct ticket {
         address owner;
@@ -43,13 +43,13 @@ contract Ticket {
     /**
      * creates a ticket and adds it to the ticket list
      *
-     * @param evnt      address of the event the ticket belongs to
-     * @param price     Price of ticket in tokens
-     * @param cat       category of ticket 
-     * @param seatid    assigned seat/zone
-     * @return uint256  id of ticket that was created
+     * param evnt      address of the event the ticket belongs to
+     * param price     Price of ticket in tokens
+     * param cat       category of ticket 
+     * param seatid    assigned seat/zone
+     * return uint256  id of ticket that was created
      */
-    function add(address evnt, uint256 price, uint256 cat, uint256 seatid) public returns (uint256) {
+    function add(address evnt, uint256 price, category cat, uint256 seatid) public returns (uint256) {
         require(evnt != address(0), "Event does not exist"); // TODO: Check event exists
         require(price > 0, "Ticket price cannot be less then 0");
         // TODO: require user has enough tokens to purchase ticket (if ticket handles purchase)
@@ -69,8 +69,8 @@ contract Ticket {
     /**
      * gets the address of the event that the ticket is for
      *
-     * @param ticketID ID of ticket to query
-     * @return address address of ticket event
+     * param ticketID ID of ticket to query
+     * return address address of ticket event
      */
     function getTicketEvent(uint256 ticketId) public view validTicketId(ticketId) returns (address) {
         return tickets[ticketId].evnt;
@@ -79,8 +79,8 @@ contract Ticket {
     /**
      * gets the price of the ticket
      *
-     * @param ticketID ID of ticket to query
-     * @return uint256 price of ticket
+     * param ticketID ID of ticket to query
+     * return uint256 price of ticket
      */
     function getTicketPrice(uint256 ticketId) public view validTicketId(ticketId) returns (uint256) {
         return tickets[ticketId].price;
@@ -89,20 +89,20 @@ contract Ticket {
     /**
      * gets the category of the ticket
      *
-     * @param ticketID ID of ticket to query
-     * @return category category of the ticket
+     * param ticketID ID of ticket to query
+     * return category category of the ticket
      */
-    function getTicketPrice(uint256 ticketId) public view validTicketId(ticketId) returns (category) {
+    function getTicketCat(uint256 ticketId) public view validTicketId(ticketId) returns (category) {
         return tickets[ticketId].cat;
     }
 
     /**
-     * gets the seatid of the ticket
+     * gets the ticket seat
      *
-     * @param ticketID ID of ticket to query
-     * @return uint256 seatid of ticket
+     * param ticketID ID of ticket to query
+     * return uint256 seatid of ticket
      */
-    function getTicketPrice(uint256 ticketId) public view validTicketId(ticketId) returns (uint256) {
+    function getTicketSeat(uint256 ticketId) public view validTicketId(ticketId) returns (uint256) {
         return tickets[ticketId].seatid;
     }
     

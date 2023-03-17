@@ -11,7 +11,7 @@ contract Seller {
     }
     
     modifier isSeller(address addr) {
-        require(accountContract.viewAccountState() == Account.status.verified,"You're not verified as a Seller");
+        //require(accountContract.viewAccountState() == Account.status.verified,"You're not verified as a Seller");
         _;
     }
 
