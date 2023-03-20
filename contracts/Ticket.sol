@@ -12,7 +12,7 @@ contract Ticket {
 
     /**
      * param owner     address of the owner of the ticket
-     * param eventId      address of the event the ticket belongs to
+     * param eventId   id of the event the ticket belongs to
      * param price     Price of ticket in tokens
      * param cat       category of ticket 
      * param seatid    assigned seat/zone 
