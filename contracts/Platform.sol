@@ -22,20 +22,27 @@ contract Platform {
     }
 
     mapping(uint256 => mapping(uint256 => address[])) public eventBiddings; // eventId => (tokenBid => addressArray)
-    mapping(uint256 => uint256) public eventTopBid; // eventId => topBid (need to constantly update eventTopBid)
+    mapping(uint256 => uint256) public eventTopBid; // eventId => topBid
     
     // Commence bidding for event
     function commenceBidding(uint256 eventId) public {
-        //require(eventBiddings[eventId] == 0);
+        require(eventContract.getEventBidState(eventId) == eventContract.bidState.close, "Event already open for bidding");
+        eventContract.setEventBidState(eventId, eventContract.bidState.open);
     }
 
     // Bid
     function addBid(uint256 eventId, uint256 tokenBid) public {
-        //require 
+        require(eventContract.getEventBidState(eventId) == eventContract.bidState.open, "Event not open for bidding");
+        // Record bidder
         eventBiddings[eventId][tokenBid].push(msg.sender);
+
+        // Update top bid
+        if (tokenBid > eventTopBid[eventId]) {
+            eventTopBid[eventId] = tokenBid;
+        }
     }
 
-    // Close bidding and 
+    // Close bidding and transfer tickets to top bidders
     function closeBidding(uint256 eventId) public {
         // compare top tickets
 
