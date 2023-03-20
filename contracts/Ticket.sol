@@ -12,14 +12,14 @@ contract Ticket {
 
     /**
      * param owner     address of the owner of the ticket
-     * param evnt      address of the event the ticket belongs to
+     * param eventId      address of the event the ticket belongs to
      * param price     Price of ticket in tokens
      * param cat       category of ticket 
      * param seatid    assigned seat/zone 
      */
     struct ticket {
         address owner;
-        address evnt; // event is a keyword
+        uint256 eventId; // event is a keyword
         uint256 price;
         category cat;
         uint256 seatid;
@@ -43,19 +43,18 @@ contract Ticket {
     /**
      * creates a ticket and adds it to the ticket list
      *
-     * param evnt      address of the event the ticket belongs to
+     * param eventId   id of the event the ticket belongs to
      * param price     Price of ticket in tokens
      * param cat       category of ticket 
      * param seatid    assigned seat/zone
      * return uint256  id of ticket that was created
      */
-    function add(address evnt, uint256 price, category cat, uint256 seatid) public returns (uint256) {
-        require(evnt != address(0), "Event does not exist"); // TODO: Check event exists
+    function add(uint256 eventId, uint256 price, category cat, uint256 seatid) public returns (uint256) {
         require(price > 0, "Ticket price cannot be less then 0");
         // TODO: require user has enough tokens to purchase ticket (if ticket handles purchase)
 
         ticket memory newTicket = ticket(msg.sender,
-                                         evnt,
+                                         eventId,
                                          price,
                                          cat,
                                          seatid);
@@ -67,13 +66,13 @@ contract Ticket {
     }
 
     /**
-     * gets the address of the event that the ticket is for
+     * gets the eventId of the event that the ticket is for
      *
      * param ticketID ID of ticket to query
-     * return address address of ticket event
+     * return eventId of ticket
      */
-    function getTicketEvent(uint256 ticketId) public view validTicketId(ticketId) returns (address) {
-        return tickets[ticketId].evnt;
+    function getTicketEvent(uint256 ticketId) public view validTicketId(ticketId) returns (uint256) {
+        return tickets[ticketId].eventId;
     }
 
     /**
