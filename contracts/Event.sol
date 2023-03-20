@@ -1,8 +1,15 @@
 pragma solidity ^0.5.0;
 
 import "./DateTime.sol";
+import "./Ticket.sol";
 
 contract Event {
+
+    Ticket ticketContract;
+
+    constructor(Ticket ticketAddress) public {
+        ticketContract = ticketAddress;
+    }
 
     struct eventObj {
         string title;
@@ -10,6 +17,7 @@ contract Event {
         uint256 dateAndTime;
         uint256 capacity;
         uint256 ticketsLeft;
+        uint256 priceOfTicket;
         address seller;
     }
 
@@ -22,6 +30,7 @@ contract Event {
         uint256 year, uint256 month, uint256 day, uint256 hour, uint256 minute, uint256 second,
         uint256 capacity,
         uint256 ticketsLeft,
+        uint256 priceOfTicket,
         address seller
     ) public returns (uint256) {
         // require creation fee in terms of tokens?
@@ -35,6 +44,7 @@ contract Event {
             DateTime.timestampFromDateTime(year, month, day, hour, minute, second),
             capacity,
             ticketsLeft,
+            priceOfTicket,
             seller
         );
 
@@ -43,6 +53,7 @@ contract Event {
         // transfer creation fee?
 
         // Generate Tickets
+        generateEventTickets(newEventId, priceOfTicket, Ticket.category.standard, ticketsLeft);
 
         return newEventId;
     }
@@ -51,6 +62,12 @@ contract Event {
         require(eventId < numEvents);
         _;
     }
+
+    function generateEventTickets(uint256 eventId, uint256 price, Ticket.category cat, uint256 numOfTickets) public validEventId(eventId) {
+        for (uint256 i = 0; i < numOfTickets; i++) {
+            ticketContract.add(eventId, price, cat, i);
+        }
+    } 
 
     function getEventTitle(uint256 eventId) public view validEventId(eventId) returns (string memory) {
         return events[eventId].title;
