@@ -1,14 +1,12 @@
 pragma solidity ^0.5.0;
 
 import "./Account.sol";
-import "./Seller.sol"; 
 import "./Event.sol";
 import "./Ticket.sol";
 import "./EventToken.sol";
 
 contract Platform {
     Account accountContract;
-    Seller sellerContract;
     EventToken eventTokenContract;
     Event eventContract;
 
@@ -25,6 +23,30 @@ contract Platform {
     modifier isBuyer() {
         require(accountContract.viewAccountState(msg.sender) == accountContract.getUnverifiedStatus());
         _;
+    }
+
+    /*Ensure caller is a verified seller*/
+    modifier isOrganiser() {
+        require(accountContract.viewAccountState(msg.sender) == accountContract.getVerifiedStatus(),"Your are not a verified seller");
+        _;
+    }
+
+    // list Event on Platform
+    function listEvent(string memory title,
+        string memory venue,
+        uint256 year, uint256 month, uint256 day, uint256 hour, uint256 minute, uint256 second,
+        uint256 capacity,
+        uint256 ticketsLeft,
+        uint256 priceOfTicket,
+        address seller) public payable isOrganiser() returns (uint256) {
+
+        // however msg.value here will not be sent to event contract. msg.value at event contract is 0.
+        require(msg.value >= 1 ether, "Insufficient deposits. Need deposit minimum 1 ether to list event.");
+
+        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day,hour,minute, second, 
+        capacity, ticketsLeft,priceOfTicket,seller);
+
+        return newEventId;
     }
 
     /* Viewing the number of tickets left for an event */
