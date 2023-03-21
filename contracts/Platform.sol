@@ -12,6 +12,9 @@ contract Platform {
     EventToken eventTokenContract;
     Event eventContract;
 
+    event BidCommenced (uint256 eventId);
+    event BidPlaced (uint256 eventId, address buyer, uint256 tokenBid);
+    event BidClosed (uint256 eventId);
     event TransferToBuyerSuccessful(address to, uint256 amount);
 
     // Platform can only exist if other contracts are created first
@@ -22,8 +25,9 @@ contract Platform {
     }
 
     struct bidInfo {
-        uint256 totalPrice;
-        uint256 totalTokenBid;
+        uint256 quantity;
+        uint256 pricePerTicket;
+        uint256 tokenPerTicket;
         uint256 firstIndexForEventBiddings; // For ease of updating bid
     }
 
@@ -43,6 +47,7 @@ contract Platform {
         require(eventContract.getEventBidState(eventId) == Event.bidState.close, "Event already open for bidding");
 
         eventContract.setEventBidState(eventId, Event.bidState.open);
+        emit BidCommenced(eventId);
     }
 
     // Bid for ticket
@@ -66,15 +71,14 @@ contract Platform {
         }
 
         // Record bidInfo for ease of future refund / update 
-        uint256 totalPrice = quantity * eventContract.getEventTicketPrice(eventId);
-        uint256 totalTokenBid = quantity * tokenBid;
-        bidInfo memory newBidInfo = bidInfo(totalPrice, totalTokenBid, firstIdx);
+        bidInfo memory newBidInfo = bidInfo(quantity, eventContract.getEventTicketPrice(eventId), tokenBid, firstIdx);
         addressBiddings[msg.sender][eventId] = newBidInfo;
         
         // Update top bid
         if (tokenBid > eventTopBid[eventId]) {
             eventTopBid[eventId] = tokenBid;
         }
+        emit BidPlaced(eventId, msg.sender, tokenBid);
     }
 
     // Close bidding and transfer tickets to top bidders
@@ -100,9 +104,10 @@ contract Platform {
             bidAmount--;
         }
 
-        // Return unsuccessful bidders
+        // TODO: Return unsuccessful bidders
         // returnBiddings()
         eventContract.setEventBidState(eventId, Event.bidState.close);
+        emit BidClosed(eventId);
     }   
 
     // Return unsuccessful bidders their corresponding ETH and tokens
@@ -128,7 +133,6 @@ contract Platform {
         msg.sender.transfer(msg.value - totalPrice); // transfer remaining back to buyer
         emit TransferToBuyerSuccessful(msg.sender, msg.value - totalPrice);
     }
-
 
 
 }
