@@ -19,6 +19,7 @@ contract Ticket {
      */
     struct ticket {
         address owner;
+        address prevowner;
         uint256 eventId; // event is a keyword
         uint256 price;
         category cat;
@@ -54,6 +55,7 @@ contract Ticket {
         // TODO: require user has enough tokens to purchase ticket (if ticket handles purchase)
 
         ticket memory newTicket = ticket(msg.sender,
+                                         address(0),
                                          eventId,
                                          price,
                                          cat,
@@ -63,6 +65,17 @@ contract Ticket {
         tickets[newTicketId] = newTicket;
 
         return newTicketId;
+    }
+
+    /**
+     * transfers ticket to the specified address
+     *
+     * param ticketID ID of ticket to transfer
+     * param transferTo address to transfer ticket to
+     */
+    function transferTicket(uint256 ticketId, address transferTo) public validTicketId(ticketId) ownerOnly(ticketId) {
+        tickets[ticketId].prevowner = tickets[ticketId].owner
+        tickets[ticketId].owner = transferTo
     }
 
     /**
