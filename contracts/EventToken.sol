@@ -6,39 +6,65 @@ contract EventToken {
     ERC20 erc20Contract;
     uint256 supplyLimit;
     uint256 currentSupply;
+    uint256 basePriceOfToken;
     address owner;
 
-    event GetEventToken(address to, uint256 amount);
-    event RefundEventToken(address to, uint256 amount);
+    event MintToken(address to, uint256 amount);
+    event BurnToken(address to, uint256 amount);
 
     constructor() public {
         ERC20 e = new ERC20();
         erc20Contract = e;
         owner = msg.sender;
         currentSupply = 0;
+        basePriceOfToken = 50000;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "You do not have permission to do this");
         _;
     }
 
-    // For purchasing of Tokens
-    function getEventToken() public payable {
-        uint256 amt = msg.value / 50000;
-        // require(erc20Contract.totalSupply() + amt < supplyLimit, "CT supply is not enough");
-        erc20Contract.mint(msg.sender, amt);
-        currentSupply = currentSupply + amt;
-        emit GetEventToken(msg.sender, amt);
+    /**
+     * Mint event tokens for address based on amount of wei
+     *
+     * param amount of token
+     * param address to get token
+     * 
+     */
+    function mintToken(uint256 amtOfWei, address _to) public onlyOwner {
+        uint256 amtOfToken = amtOfWei / basePriceOfToken;
+        erc20Contract.mint(_to, amtOfToken);
+        currentSupply = currentSupply + amtOfToken;
+        emit MintToken(_to, amtOfToken);
     }
 
-    // Refund for the amount of tokens given
-    function refundEventToken(uint256 amt) public {
-        require(erc20Contract.balanceOf(msg.sender) >= amt, "Your balance is less than the amount of tokens asked for refund.");
-        erc20Contract.burn(msg.sender, amt);
-        msg.sender.transfer(amt * 50000);
-        currentSupply = currentSupply - amt;
-        emit RefundEventToken(msg.sender, amt);
+    /**
+     * Burn event tokens from address
+     *
+     * param amount of token
+     * param address to get token
+     * 
+     */
+     function burnToken(uint256 amtOfToken, address _from) public onlyOwner {
+        erc20Contract.burn(_from, amtOfToken);
+        currentSupply = currentSupply - amtOfToken;
+        emit BurnToken(_from, amtOfToken);
+    }
+
+    /**
+     * Transfer token from one address to another
+     *
+     * param amount of tokens to bid
+     * 
+     */
+     function transferFrom(address _from, address _to, uint256 _value) public onlyOwner {
+        erc20Contract.transferFrom(_from, _to, _value);
+    }
+
+    // For checking of token credits of another address (only for owner)
+    function checkEventTokenOf(address _from) public view onlyOwner returns(uint256) {
+        return erc20Contract.balanceOf(_from);
     }
 
     // For checking of token credits
