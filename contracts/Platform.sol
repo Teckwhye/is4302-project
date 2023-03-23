@@ -27,7 +27,7 @@ contract Platform {
 
     /*Ensure caller is a verified seller*/
     modifier isOrganiser() {
-        require(accountContract.viewAccountState(msg.sender) == accountContract.getVerifiedStatus(),"Your are not a verified seller");
+        require(accountContract.viewAccountState(msg.sender) == accountContract.getVerifiedStatus(),"You are not a verified seller");
         _;
     }
 
