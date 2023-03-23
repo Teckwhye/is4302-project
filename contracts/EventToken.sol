@@ -46,6 +46,11 @@ contract EventToken {
         return erc20Contract.balanceOf(msg.sender);
     }
 
+    // For checking of token credits of address
+    function checkEventTokenOf(address addr) public view returns(uint256) {
+        return erc20Contract.balanceOf(addr);
+    }
+
     // Check current amount of supply of tokens in the market
     function getCurrentSupply() public view returns (uint256) {
         return currentSupply;
