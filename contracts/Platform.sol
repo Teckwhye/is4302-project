@@ -12,6 +12,8 @@ contract Platform {
 
     event TransferToBuyerSuccessful(address to, uint256 amount);
 
+    mapping(address => uint256) sellerDepositedValue;
+
     // Platform can only exist if other contracts are created first
     constructor(Account accountAddr, EventToken eventTokenAddr, Event eventAddr) public {
         accountContract = accountAddr;
@@ -41,7 +43,7 @@ contract Platform {
         address seller) public payable isOrganiser() returns (uint256) {
 
         // however msg.value here will not be sent to event contract. msg.value at event contract is 0.
-        require(msg.value >= 1 ether, "Insufficient deposits. Need deposit minimum 1 ether to list event.");
+        require(msg.value >= calMinimumDeposit(capacity,priceOfTicket) * 1 wei, "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event.");
 
         uint256 newEventId = eventContract.createEvent(title, venue, year, month, day,hour,minute, second, 
         capacity, ticketsLeft,priceOfTicket,seller);
@@ -66,6 +68,18 @@ contract Platform {
         /* Map ticket id to an account */
         msg.sender.transfer(msg.value - totalPrice); // transfer remaining back to buyer
         emit TransferToBuyerSuccessful(msg.sender, msg.value - totalPrice);
+    }
+
+    function endEvent(uint256 eventId) public isOrganiser() {
+        address seller = eventContract.getEventSeller(eventId);
+        require(seller == msg.sender, "Only original seller can end event");
+        eventContract.endEvent(eventId);
+        msg.sender.transfer(sellerDepositedValue[seller]);
+    }
+
+    function calMinimumDeposit(uint256 capacity, uint256 priceOfTicket) public pure returns(uint256){
+        // 1USD = 50,000 wei
+        return (capacity * priceOfTicket)/2 * 50000;
     }
 
 

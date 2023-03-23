@@ -92,5 +92,11 @@ contract Event {
     function getEventSeller(uint256 eventId) public view validEventId(eventId) returns (address) {
         return events[eventId].seller;
     }
+
+    function endEvent(uint256 eventId) public validEventId(eventId) {
+        // return of deposit value done at Platform
+        // only call this function at Platform
+        delete events[eventId];
+    }
 }
 
