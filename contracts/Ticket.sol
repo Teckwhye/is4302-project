@@ -74,8 +74,8 @@ contract Ticket {
      * param transferTo address to transfer ticket to
      */
     function transferTicket(uint256 ticketId, address transferTo) public validTicketId(ticketId) ownerOnly(ticketId) {
-        tickets[ticketId].prevowner = tickets[ticketId].owner
-        tickets[ticketId].owner = transferTo
+        tickets[ticketId].prevowner = tickets[ticketId].owner;
+        tickets[ticketId].owner = transferTo;
     }
 
     /**
