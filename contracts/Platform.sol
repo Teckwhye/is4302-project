@@ -114,6 +114,7 @@ contract Platform {
 
         uint256 bidAmount = eventTopBid[eventId];
         uint256 ticketsLeft = eventContract.getEventTicketsLeft(eventId);
+        uint256 ticketId = eventContract.getEventFirstTicketId(eventId);
 
         // Tickets given out starting from top bidders
         while (ticketsLeft != 0) {
@@ -122,7 +123,8 @@ contract Platform {
                 if (bidderList[i] == address(0)) continue; 
 
                 // TODO: transfer ticket to address @ bidderList[i]
-
+                ticketContract.transferTicket(ticketId, bidderList[i]); 
+                ticketId++;
                 ticketsLeft--;
 
                 if (ticketsLeft == 0) break;

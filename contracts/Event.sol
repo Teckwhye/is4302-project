@@ -22,6 +22,7 @@ contract Event {
         uint256 priceOfTicket;
         address seller;
         bidState state;
+        uint256 firstTicketId;
     }
 
     uint256 public numEvents = 0;
@@ -47,15 +48,17 @@ contract Event {
             ticketsLeft,
             priceOfTicket,
             seller,
-            bidState.close
+            bidState.close,
+            0
         );
 
         uint256 newEventId = numEvents++;
         events[newEventId] = newEvent;
-        // transfer creation fee?
 
         // Generate Tickets
-        generateEventTickets(newEventId, priceOfTicket, Ticket.category.standard, ticketsLeft);
+        uint256 firstTicketId = generateEventTickets(newEventId, priceOfTicket, Ticket.category.standard, ticketsLeft);
+
+        setEventFirstTicketId(newEventId, firstTicketId);
 
         return newEventId;
     }
@@ -69,10 +72,16 @@ contract Event {
         return eventId < numEvents;
     }
 
-    function generateEventTickets(uint256 eventId, uint256 price, Ticket.category cat, uint256 numOfTickets) public validEventId(eventId) {
+    function generateEventTickets(uint256 eventId, uint256 price, Ticket.category cat, uint256 numOfTickets) public validEventId(eventId) returns (uint256) {
+        uint256 firstTicketId;
         for (uint256 i = 0; i < numOfTickets; i++) {
-            ticketContract.add(eventId, price, cat, i);
+            if (i == 0) {
+                firstTicketId = ticketContract.add(eventId, price, cat, i);
+            } else {
+                ticketContract.add(eventId, price, cat, i);
+            }
         }
+        return firstTicketId;
     } 
 
     function getEventTitle(uint256 eventId) public view validEventId(eventId) returns (string memory) {
@@ -116,6 +125,14 @@ contract Event {
 
     function setEventBidState(uint256 eventId, bidState bstate) public validEventId(eventId) {
         events[eventId].state = bstate;
+    }
+
+    function getEventFirstTicketId(uint256 eventId) public view validEventId(eventId) returns (uint256) {
+        return events[eventId].firstTicketId;
+    }
+
+    function setEventFirstTicketId(uint256 eventId, uint256 ticketId) public validEventId(eventId) {
+        events[eventId].firstTicketId = ticketId;
     }
 }
 
