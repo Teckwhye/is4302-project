@@ -37,13 +37,12 @@ contract Event {
         uint256 priceOfTicket,
         address seller
     ) public returns (uint256) {
-        uint256 eventDateAndTime = DateTime.timestampFromDateTime(year, month, day, hour, minute, second);
-        require(eventDateAndTime > now, "Invalid Date and Time");
+        require(DateTime.timestampFromDateTime(year, month, day, hour, minute, second) > now, "Invalid Date and Time");
 
         eventObj memory newEvent = eventObj(
             title,
             venue,
-            eventDateAndTime,
+            DateTime.timestampFromDateTime(year, month, day, hour, minute, second),
             capacity,
             ticketsLeft,
             priceOfTicket,

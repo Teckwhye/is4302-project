@@ -61,8 +61,7 @@ contract Platform {
         // however msg.value here will not be sent to event contract. msg.value at event contract is 0.
         require(msg.value >= calMinimumDeposit(capacity,priceOfTicket) * 1 wei, "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event.");
 
-        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day,hour,minute, second, 
-        capacity, ticketsLeft,priceOfTicket,seller);
+        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day, hour, minute, second, capacity, ticketsLeft, priceOfTicket, seller);
 
         return newEventId;
     }
@@ -85,7 +84,9 @@ contract Platform {
         require(eventTokenContract.checkEventTokenOf(msg.sender) >= tokenBid * quantity, "Buyer has insufficient EventTokens");
 
         // Transfer tokenBid & ETH to contract
-        eventTokenContract.transferFrom(msg.sender, address(this), tokenBid * quantity);
+        if (tokenBid > 0) {
+            eventTokenContract.transferFrom(msg.sender, address(this), tokenBid * quantity);
+        }
         msg.sender.transfer(msg.value - (eventContract.getEventTicketPrice(eventId) * quantity)); // transfer remaining back to buyer
     
         // Record eventBiddings
@@ -150,14 +151,14 @@ contract Platform {
     }
 
     /* Buyers buying tickets for an event */
-    function buyTickets(uint256 eventId, uint8 quantity, uint256 price) public payable isBuyer() {
+    function buyTickets(uint256 eventId, uint8 quantity) public payable isBuyer() {
         require(eventContract.getEventBidState(eventId) == Event.bidState.buy, "Event not open for buying");
         require(quantity > 0, "Quantity of tickets must be at least 1");
         require(quantity <= 4, "You have passed the maximum bulk purchase limit");
         require(eventContract.isEventIdValid(eventId) == true, "Invalid Event");
         require(eventContract.getEventTicketsLeft(eventId) >= quantity, "Not enough tickets");
 
-        uint256 totalPrice = price * quantity;
+        uint256 totalPrice = eventContract.getEventTicketPrice(eventId) * quantity;
         require(msg.value >= totalPrice, "Buyer has insufficient ETH to buy tickets");
 
         // Transfer ticket
