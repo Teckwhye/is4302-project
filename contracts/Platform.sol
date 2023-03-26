@@ -79,13 +79,14 @@ contract Platform {
     // Bid for ticket
     function placeBid(uint256 eventId, uint8 quantity, uint256 tokenBid) public payable isBuyer() {
         require(eventContract.getEventBidState(eventId) == Event.bidState.open, "Event not open for bidding");
+        require(quantity > 0, "Quantity of tickets must be at least 1");
         require(quantity <= 4, "You have passed the maximum bulk purchase limit");
         require(msg.value >= eventContract.getEventTicketPrice(eventId) * quantity, "Buyer has insufficient ETH");
         require(eventTokenContract.checkEventTokenOf(msg.sender) >= tokenBid * quantity, "Buyer has insufficient EventTokens");
 
-        //TODO: Transfer tokenBid & ETH to contract
-        //eventTokenContract.transferFrom(msg.sender, address(this), tokenBid * quantity);
-
+        // Transfer tokenBid & ETH to contract
+        eventTokenContract.transferFrom(msg.sender, address(this), tokenBid * quantity);
+        msg.sender.transfer(msg.value - (eventContract.getEventTicketPrice(eventId) * quantity)); // transfer remaining back to buyer
     
         // Record eventBiddings
         uint256 firstIdx;
@@ -122,7 +123,6 @@ contract Platform {
             for (uint256 i = 0; i < bidderList.length; i++) {
                 if (bidderList[i] == address(0)) continue; 
 
-                // TODO: transfer ticket to address @ bidderList[i]
                 ticketContract.transferTicket(ticketId, bidderList[i]); 
                 ticketId++;
                 ticketsLeft--;
@@ -152,6 +152,7 @@ contract Platform {
     /* Buyers buying tickets for an event */
     function buyTickets(uint256 eventId, uint8 quantity, uint256 price) public payable isBuyer() {
         require(eventContract.getEventBidState(eventId) == Event.bidState.buy, "Event not open for buying");
+        require(quantity > 0, "Quantity of tickets must be at least 1");
         require(quantity <= 4, "You have passed the maximum bulk purchase limit");
         require(eventContract.isEventIdValid(eventId) == true, "Invalid Event");
         require(eventContract.getEventTicketsLeft(eventId) >= quantity, "Not enough tickets");
@@ -159,8 +160,18 @@ contract Platform {
         uint256 totalPrice = price * quantity;
         require(msg.value >= totalPrice, "Buyer has insufficient ETH to buy tickets");
 
-        /* TODO: Map ticket id to an account */
-        // ticketContract.transferTicket(, msg.sender); 
+        // Transfer ticket
+        uint256 firstTicketId = eventContract.getEventFirstTicketId(eventId);
+        uint256 lastTicketId = firstTicketId + eventContract.getEventCapacity(eventId) - 1;
+
+        for (lastTicketId; lastTicketId >= firstTicketId; lastTicketId--) {
+            if (ticketContract.getTicketOwner(lastTicketId) == address(this)) {
+                ticketContract.transferTicket(lastTicketId, msg.sender);
+                quantity--;
+                if (quantity == 0) break;
+            }
+        }
+
         msg.sender.transfer(msg.value - totalPrice); // transfer remaining back to buyer
         emit TransferToBuyerSuccessful(msg.sender, msg.value - totalPrice);
     }

@@ -56,7 +56,7 @@ contract Event {
         events[newEventId] = newEvent;
 
         // Generate Tickets
-        uint256 firstTicketId = generateEventTickets(newEventId, priceOfTicket, Ticket.category.standard, ticketsLeft);
+        uint256 firstTicketId = generateEventTickets(msg.sender, newEventId, priceOfTicket, Ticket.category.standard, ticketsLeft);
 
         setEventFirstTicketId(newEventId, firstTicketId);
 
@@ -72,13 +72,13 @@ contract Event {
         return eventId < numEvents;
     }
 
-    function generateEventTickets(uint256 eventId, uint256 price, Ticket.category cat, uint256 numOfTickets) public validEventId(eventId) returns (uint256) {
+    function generateEventTickets(address owner, uint256 eventId, uint256 price, Ticket.category cat, uint256 numOfTickets) public validEventId(eventId) returns (uint256) {
         uint256 firstTicketId;
         for (uint256 i = 0; i < numOfTickets; i++) {
             if (i == 0) {
-                firstTicketId = ticketContract.add(eventId, price, cat, i);
+                firstTicketId = ticketContract.add(owner, eventId, price, cat, i);
             } else {
-                ticketContract.add(eventId, price, cat, i);
+                ticketContract.add(owner, eventId, price, cat, i);
             }
         }
         return firstTicketId;
