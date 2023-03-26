@@ -12,18 +12,18 @@ contract("EventToken", function (accounts) {
     
     console.log("Testing EventToken contract");
 
-    it("Get Event Token", async () => {
+    it("Mint Event Token", async () => {
         let totalSupplyBefore = await eventTokenInstance.getCurrentSupply({from: accounts[1]});
-        await eventTokenInstance.getEventToken({from: accounts[1], value: 5000000});
+        await eventTokenInstance.mintToken(5000000, accounts[1]);
         let totalSupplyAfter = await eventTokenInstance.getCurrentSupply({from: accounts[1]});
         let totalSupplyAdded = totalSupplyAfter - totalSupplyBefore;
         assert.equal(await eventTokenInstance.checkEventToken({from: accounts[1]}), 100);
         assert.equal(totalSupplyAdded, 100);
     });
 
-    it("Refund Conert Token", async () => {
+    it("Burn Event Token", async () => {
         let totalSupplyBefore = await eventTokenInstance.getCurrentSupply({from: accounts[1]});
-        await eventTokenInstance.refundEventToken(100,{from: accounts[1]});
+        await eventTokenInstance.burnToken(100, accounts[1]);
         let totalSupplyAfter = await eventTokenInstance.getCurrentSupply({from: accounts[1]});
         let totalSupplyRemoved = totalSupplyBefore - totalSupplyAfter;
         assert.equal(await eventTokenInstance.checkEventToken({from: accounts[1]}), 0);
