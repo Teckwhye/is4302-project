@@ -11,7 +11,7 @@ contract Event {
         ticketContract = ticketAddress;
     }
 
-    enum bidState { open, close }
+    enum bidState { close, open, buy }
 
     struct eventObj {
         string title;
@@ -36,15 +36,13 @@ contract Event {
         uint256 priceOfTicket,
         address seller
     ) public returns (uint256) {
-        // require creation fee in terms of tokens?
-        // require(msg.sender == platformOwner/seller?)
-
-        // require input validation for parameters Eg. datetime
+        uint256 eventDateAndTime = DateTime.timestampFromDateTime(year, month, day, hour, minute, second);
+        require(eventDateAndTime > now, "Invalid Date and Time");
 
         eventObj memory newEvent = eventObj(
             title,
             venue,
-            DateTime.timestampFromDateTime(year, month, day, hour, minute, second),
+            eventDateAndTime,
             capacity,
             ticketsLeft,
             priceOfTicket,
@@ -65,6 +63,10 @@ contract Event {
     modifier validEventId(uint256 eventId) {
         require(eventId < numEvents);
         _;
+    }
+
+    function isEventIdValid(uint256 eventId) public view returns(bool) {
+        return eventId < numEvents;
     }
 
     function generateEventTickets(uint256 eventId, uint256 price, Ticket.category cat, uint256 numOfTickets) public validEventId(eventId) {
