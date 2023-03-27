@@ -51,7 +51,6 @@ contract("Platform", function (accounts) {
         await platformInstance.listEvent(
             "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,5,5,65,accounts[2], {from: accounts[2], value: oneEth});
         var eventTitle = await eventInstance.getEventTitle(0);
-        console.log(eventTitle);
         await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
     });
 
