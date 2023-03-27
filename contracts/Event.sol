@@ -11,6 +11,8 @@ contract Event {
         ticketContract = ticketAddress;
     }
 
+    enum bidState { open, close }
+
     struct eventObj {
         string title;
         string venue;
@@ -19,6 +21,7 @@ contract Event {
         uint256 ticketsLeft;
         uint256 priceOfTicket;
         address seller;
+        bidState state;
     }
 
     uint256 public numEvents = 0;
@@ -45,7 +48,8 @@ contract Event {
             capacity,
             ticketsLeft,
             priceOfTicket,
-            seller
+            seller,
+            bidState.close
         );
 
         uint256 newEventId = numEvents++;
@@ -88,9 +92,28 @@ contract Event {
     function getEventTicketsLeft(uint256 eventId) public view validEventId(eventId) returns (uint256) {
         return events[eventId].ticketsLeft;
     }
+
+    function getEventTicketPrice(uint256 eventId) public view validEventId(eventId) returns (uint256) {
+        return events[eventId].priceOfTicket;
+    }
     
     function getEventSeller(uint256 eventId) public view validEventId(eventId) returns (address) {
         return events[eventId].seller;
+    }
+
+
+    function endEvent(uint256 eventId) public validEventId(eventId) {
+        // return of deposit value done at Platform
+        // only call this function at Platform
+        delete events[eventId];
+    }
+    
+    function getEventBidState(uint256 eventId) public view validEventId(eventId) returns (bidState) {
+        return events[eventId].state;
+    }
+
+    function setEventBidState(uint256 eventId, bidState bstate) public validEventId(eventId) {
+        events[eventId].state = bstate;
     }
 }
 
