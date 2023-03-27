@@ -42,20 +42,18 @@ contract("Platform", function (accounts) {
     it("Insufficient deposits to list event", async () => {
         await truffleAssert.reverts(
             platformInstance.listEvent(
-                "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,600,600,65,accounts[2], {from: accounts[2], value: 0}),
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,5,5,65,accounts[2], {from: accounts[2], value: 0}),
             "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event."
         );
     });
 
-    // Unable to get this to work, cannot even console.log because it takes too long to run
-    // Think there's connection timeout/ error
-    // it("Event listed successfully", async () => {
-    //     await platformInstance.listEvent(
-    //         "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,600,600,65,accounts[2], {from: accounts[2], value: oneEth});
-    //     var eventTitle = await eventInstance.getEventTitle(0);
-    //     console.log(eventTitle);
-    //     await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
-    // });
+    it("Event listed successfully", async () => {
+        await platformInstance.listEvent(
+            "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,5,5,65,accounts[2], {from: accounts[2], value: oneEth});
+        var eventTitle = await eventInstance.getEventTitle(0);
+        console.log(eventTitle);
+        await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
+    });
 
     it("Insufficent funds to buy tickets", async () => {
         await truffleAssert.reverts(
