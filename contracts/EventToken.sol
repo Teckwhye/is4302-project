@@ -74,10 +74,12 @@ contract EventToken {
     }
 
     /**
-     * Transfer token from 
+     * Transfer token from address to address
      *
-     * param address of owner
-     * param address of approved spender
+     * param address of owner to tansfer from
+     * param address of caller which is approved with allowance to transfer
+     * param address of approved spender 
+     * param value of token to transfer
      * 
      */
     function approvedTransferFrom(address _from, address _caller, address _to, uint256 _value) public {
