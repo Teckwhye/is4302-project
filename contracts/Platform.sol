@@ -17,6 +17,7 @@ contract Platform {
     event TransferToBuyerSuccessful(address to, uint256 amount);
 
     mapping(address => uint256) sellerDepositedValue;
+    address owner;
 
     // Platform can only exist if other contracts are created first
     constructor(Account accountAddr, EventToken eventTokenAddr, Event eventAddr, Ticket ticketAddr) public {
@@ -24,6 +25,7 @@ contract Platform {
         eventTokenContract = eventTokenAddr;
         eventContract = eventAddr;
         ticketContract = ticketAddr;
+        owner = msg.sender;
     }
 
     struct bidInfo {
@@ -82,10 +84,11 @@ contract Platform {
         require(quantity <= 4, "You have passed the maximum bulk purchase limit");
         require(msg.value >= eventContract.getEventTicketPrice(eventId) * quantity, "Buyer has insufficient ETH");
         require(eventTokenContract.checkEventTokenOf(msg.sender) >= tokenBid * quantity, "Buyer has insufficient EventTokens");
-
+        
         // Transfer tokenBid & ETH to contract
         if (tokenBid > 0) {
-            eventTokenContract.transferFrom(msg.sender, address(this), tokenBid * quantity);
+            require(eventTokenContract.checkAllowance(msg.sender, address(this)) >= tokenBid * quantity, "Buyer has not approved sufficient EventTokens");
+            eventTokenContract.approvedTransferFrom(msg.sender, address(this), address(this), tokenBid * quantity);
         }
         msg.sender.transfer(msg.value - (eventContract.getEventTicketPrice(eventId) * quantity)); // transfer remaining back to buyer
     

@@ -17,7 +17,8 @@ contract("Event", function (accounts) {
 
     it("Create Event", async () => {
         await eventInstance.createEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1]});
-        const title = await eventInstance.getEventTitle(0);
+        let latestEventId  = (await eventInstance.getLatestEventId()).toNumber();
+        const title = await eventInstance.getEventTitle(latestEventId);
         await assert.equal("Title 0", title, "Failed to create event");
     });
 })

@@ -133,5 +133,9 @@ contract Event {
     function setEventFirstTicketId(uint256 eventId, uint256 ticketId) public validEventId(eventId) {
         events[eventId].firstTicketId = ticketId;
     }
+
+    function getLatestEventId() public view returns (uint256) {
+        return numEvents - 1;
+    }
 }
 

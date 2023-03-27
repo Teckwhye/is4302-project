@@ -58,8 +58,46 @@ contract EventToken {
      * param amount of tokens to bid
      * 
      */
-     function transferFrom(address _from, address _to, uint256 _value) public onlyOwner {
+    function transferFrom(address _from, address _to, uint256 _value) public onlyOwner {
         erc20Contract.transferFrom(_from, _to, _value);
+    }
+
+    /**
+     * Approve token to be spendable by spender
+     *
+     * param address of spender
+     * param value of token allowed to spend
+     * 
+     */
+    function approveToken(address _spender, uint256 _value) public returns (bool) {
+        return erc20Contract.approve(_spender, _value);
+    }
+
+    /**
+     * Transfer token from 
+     *
+     * param address of owner
+     * param address of approved spender
+     * 
+     */
+    function approvedTransferFrom(address _from, address _caller, address _to, uint256 _value) public {
+        erc20Contract.approvedTransferFrom(_from, _caller, _to, _value);
+    }
+
+    /**
+     * Check token allowance of approved spender
+     *
+     * param address of owner
+     * param address of approved spender
+     * 
+     */
+    function checkAllowance(address _owner, address _spender) public view returns (uint256) {
+        return erc20Contract.allowance(_owner, _spender);
+    }
+
+    // For getting tokens for testing purposes [To be removed in production]
+    function getTokenForTesting(address addr, uint256 amt) public onlyOwner {
+        erc20Contract.mint(addr, amt);
     }
 
     // For checking of token credits
