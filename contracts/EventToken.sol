@@ -63,9 +63,9 @@ contract EventToken {
     }
 
     // For checking of token credits of another address (only for owner)
-    function checkEventTokenOf(address _from) public view onlyOwner returns(uint256) {
-        return erc20Contract.balanceOf(_from);
-    }
+    // function checkEventTokenOf(address _from) public view onlyOwner returns(uint256) {
+    //     return erc20Contract.balanceOf(_from);
+    // }
 
     // For checking of token credits
     function checkEventToken() public view returns(uint256) {

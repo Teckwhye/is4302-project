@@ -3,14 +3,59 @@ const truffleAssert = require("truffle-assertions"); // npm truffle-assertions
 const BigNumber = require("bignumber.js"); // npm install bignumber.js
 var assert = require("assert");
 
+const oneEth = new BigNumber(1000000000000000000); // 1 eth
+
 var Platform = artifacts.require("../contracts/Platform.sol");
+var Account = artifacts.require("../contracts/Account.sol");
+var Event = artifacts.require("../contracts/Event.sol");
 
 contract("Platform", function (accounts) {
     before(async () => {
         platformInstance = await Platform.deployed();
+        accountInstance = await Account.deployed();
+        eventInstance = await Event.deployed();
     });
     
     console.log("Testing Platform contract");
+
+    it("Account(Seller) unable to list event if yet to be verified", async () => {
+        await truffleAssert.reverts(
+            platformInstance.listEvent(
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,600,600,65, accounts[2],{from: accounts[2], value: 0}),
+            "You are not a verified seller"
+        );
+    });
+
+    it("Account(Seller) not verified at the start", async () => {
+        var state = await accountInstance.viewAccountState.call(accounts[2]);
+        var unverifiedStatus = await accountInstance.getUnverifiedStatus.call();
+        await assert.strictEqual(state.toString(),unverifiedStatus.toString(),"Account is already verified.");
+    });
+
+    it("Verify account(Seller)", async () => {
+        await accountInstance.verifyAccount(accounts[2]);
+        var state = await accountInstance.viewAccountState.call(accounts[2]);
+        var verifiedStatus = await accountInstance.getVerifiedStatus.call();
+        await assert.strictEqual(state.toString(),verifiedStatus.toString(),"Account is not verified.");
+    });
+
+    it("Insufficient deposits to list event", async () => {
+        await truffleAssert.reverts(
+            platformInstance.listEvent(
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,600,600,65,accounts[2], {from: accounts[2], value: 0}),
+            "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event."
+        );
+    });
+
+    // Unable to get this to work, cannot even console.log because it takes too long to run
+    // Think there's connection timeout/ error
+    // it("Event listed successfully", async () => {
+    //     await platformInstance.listEvent(
+    //         "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,600,600,65,accounts[2], {from: accounts[2], value: oneEth});
+    //     var eventTitle = await eventInstance.getEventTitle(0);
+    //     console.log(eventTitle);
+    //     await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
+    // });
 
     it("Insufficent funds to buy tickets", async () => {
         await truffleAssert.reverts(

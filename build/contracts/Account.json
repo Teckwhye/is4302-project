@@ -1,0 +1,1508 @@
+{
+  "contractName": "Account",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "verifyAccount",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "viewAccountState",
+      "outputs": [
+        {
+          "internalType": "enum Account.status",
+          "name": "state",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getUnverifiedStatus",
+      "outputs": [
+        {
+          "internalType": "enum Account.status",
+          "name": "state",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getVerifiedStatus",
+      "outputs": [
+        {
+          "internalType": "enum Account.status",
+          "name": "state",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"getUnverifiedStatus\",\"outputs\":[{\"internalType\":\"enum Account.status\",\"name\":\"state\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getVerifiedStatus\",\"outputs\":[{\"internalType\":\"enum Account.status\",\"name\":\"state\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"verifyAccount\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"viewAccountState\",\"outputs\":[{\"internalType\":\"enum Account.status\",\"name\":\"state\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Account.sol\":\"Account\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/Account.sol\":{\"keccak256\":\"0x44191a236a15422797a83afef8d9d122f654d6eed2304a85fc1012e4b3900fad\",\"urls\":[\"bzz-raw://0abd850e30bd18db1003546bdef4d3f80f644068fc93738eed3e3736fa72f076\",\"dweb:/ipfs/QmS2P5zA48uAwENC3Q2d8EJFxnyMVTTGWzpac86Gyuzf76\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610257806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806390f9b678146100515780639a6c89511461007d578063a76dd774146100e3578063f16dfbe91461010f575b600080fd5b610059610153565b6040518082600181111561006957fe5b60ff16815260200191505060405180910390f35b6100bf6004803603602081101561009357600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061015b565b604051808260018111156100cf57fe5b60ff16815260200191505060405180910390f35b6100eb6101b3565b604051808260018111156100fb57fe5b60ff16815260200191505060405180910390f35b6101516004803603602081101561012557600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506101bc565b005b600080905090565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060000160009054906101000a900460ff169050919050565b60006001905090565b60016000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060000160006101000a81548160ff0219169083600181111561021a57fe5b02179055505056fea265627a7a72315820c85e169155ae40122c9d7b35ffb800735372c804baed84a155ab2c9619563af264736f6c63430005110032",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c806390f9b678146100515780639a6c89511461007d578063a76dd774146100e3578063f16dfbe91461010f575b600080fd5b610059610153565b6040518082600181111561006957fe5b60ff16815260200191505060405180910390f35b6100bf6004803603602081101561009357600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061015b565b604051808260018111156100cf57fe5b60ff16815260200191505060405180910390f35b6100eb6101b3565b604051808260018111156100fb57fe5b60ff16815260200191505060405180910390f35b6101516004803603602081101561012557600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506101bc565b005b600080905090565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060000160009054906101000a900460ff169050919050565b60006001905090565b60016000808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060000160006101000a81548160ff0219169083600181111561021a57fe5b02179055505056fea265627a7a72315820c85e169155ae40122c9d7b35ffb800735372c804baed84a155ab2c9619563af264736f6c63430005110032",
+  "sourceMap": "25:821:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:821:0;;;;;;;",
+  "deployedSourceMap": "25:821:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:821:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;628:107;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;499:119;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;499:119:0;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;741:103;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;353:99;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;353:99:0;;;;;;;;;;;;;;;;;;;:::i;:::-;;628:107;680:12;711:17;704:24;;628:107;:::o;499:119::-;560:12;591:8;:14;600:4;591:14;;;;;;;;;;;;;;;:20;;;;;;;;;;;;584:27;;499:119;;;:::o;741:103::-;791:12;822:15;815:22;;741:103;:::o;353:99::-;430:15;407:8;:14;416:4;407:14;;;;;;;;;;;;;;;:20;;;:38;;;;;;;;;;;;;;;;;;;;;;;;353:99;:::o",
+  "source": "pragma solidity ^0.5.0;\n\ncontract Account {\n    // Struct creation for the account member\n    enum status {\n        unverified,\n        verified\n    }\n\n    struct account {\n        status state; // whether an account can sell tickets\n    }\n\n    mapping (address => account) accounts;\n\n    /* Ensures an account is allowed to list on the platform */\n    function verifyAccount(address addr) public {\n        accounts[addr].state = status.verified;\n    }\n\n    /* View account verification state*/\n    function viewAccountState(address addr) public view returns (status state) {\n        return accounts[addr].state;\n    }\n    \n    function getUnverifiedStatus() public pure returns (status state) {\n        return status.unverified;\n    }\n\n    function getVerifiedStatus() public pure returns (status state) {\n        return status.verified;\n    }\n}",
+  "sourcePath": "C:\\Users\\jd98_\\OneDrive\\Desktop\\IS4302\\proj\\contracts\\Account.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/Account.sol",
+    "exportedSymbols": {
+      "Account": [
+        57
+      ]
+    },
+    "id": 58,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:0"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 57,
+        "linearizedBaseContracts": [
+          57
+        ],
+        "name": "Account",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "Account.status",
+            "id": 4,
+            "members": [
+              {
+                "id": 2,
+                "name": "unverified",
+                "nodeType": "EnumValue",
+                "src": "116:10:0"
+              },
+              {
+                "id": 3,
+                "name": "verified",
+                "nodeType": "EnumValue",
+                "src": "136:8:0"
+              }
+            ],
+            "name": "status",
+            "nodeType": "EnumDefinition",
+            "src": "94:56:0"
+          },
+          {
+            "canonicalName": "Account.account",
+            "id": 7,
+            "members": [
+              {
+                "constant": false,
+                "id": 6,
+                "name": "state",
+                "nodeType": "VariableDeclaration",
+                "scope": 7,
+                "src": "181:12:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_status_$4",
+                  "typeString": "enum Account.status"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 5,
+                  "name": "status",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 4,
+                  "src": "181:6:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_status_$4",
+                    "typeString": "enum Account.status"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "account",
+            "nodeType": "StructDefinition",
+            "scope": 57,
+            "src": "156:83:0",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 11,
+            "name": "accounts",
+            "nodeType": "VariableDeclaration",
+            "scope": 57,
+            "src": "245:37:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_account_$7_storage_$",
+              "typeString": "mapping(address => struct Account.account)"
+            },
+            "typeName": {
+              "id": 10,
+              "keyType": {
+                "id": 8,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "254:7:0",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "245:28:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_account_$7_storage_$",
+                "typeString": "mapping(address => struct Account.account)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 9,
+                "name": "account",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 7,
+                "src": "265:7:0",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_account_$7_storage_ptr",
+                  "typeString": "struct Account.account"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 24,
+              "nodeType": "Block",
+              "src": "397:55:0",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 22,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 16,
+                          "name": "accounts",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 11,
+                          "src": "407:8:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_account_$7_storage_$",
+                            "typeString": "mapping(address => struct Account.account storage ref)"
+                          }
+                        },
+                        "id": 18,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 17,
+                          "name": "addr",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 13,
+                          "src": "416:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "407:14:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_account_$7_storage",
+                          "typeString": "struct Account.account storage ref"
+                        }
+                      },
+                      "id": 19,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "state",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 6,
+                      "src": "407:20:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_enum$_status_$4",
+                        "typeString": "enum Account.status"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 20,
+                        "name": "status",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4,
+                        "src": "430:6:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_enum$_status_$4_$",
+                          "typeString": "type(enum Account.status)"
+                        }
+                      },
+                      "id": 21,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "memberName": "verified",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "430:15:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_enum$_status_$4",
+                        "typeString": "enum Account.status"
+                      }
+                    },
+                    "src": "407:38:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_status_$4",
+                      "typeString": "enum Account.status"
+                    }
+                  },
+                  "id": 23,
+                  "nodeType": "ExpressionStatement",
+                  "src": "407:38:0"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 25,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "verifyAccount",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 14,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 13,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 25,
+                  "src": "376:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 12,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "376:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "375:14:0"
+            },
+            "returnParameters": {
+              "id": 15,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "397:0:0"
+            },
+            "scope": 57,
+            "src": "353:99:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 37,
+              "nodeType": "Block",
+              "src": "574:44:0",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "baseExpression": {
+                        "argumentTypes": null,
+                        "id": 32,
+                        "name": "accounts",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 11,
+                        "src": "591:8:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_account_$7_storage_$",
+                          "typeString": "mapping(address => struct Account.account storage ref)"
+                        }
+                      },
+                      "id": 34,
+                      "indexExpression": {
+                        "argumentTypes": null,
+                        "id": 33,
+                        "name": "addr",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 27,
+                        "src": "600:4:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "591:14:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_account_$7_storage",
+                        "typeString": "struct Account.account storage ref"
+                      }
+                    },
+                    "id": 35,
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "state",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 6,
+                    "src": "591:20:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_status_$4",
+                      "typeString": "enum Account.status"
+                    }
+                  },
+                  "functionReturnParameters": 31,
+                  "id": 36,
+                  "nodeType": "Return",
+                  "src": "584:27:0"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 38,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "viewAccountState",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 28,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 38,
+                  "src": "525:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 26,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "525:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "524:14:0"
+            },
+            "returnParameters": {
+              "id": 31,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 30,
+                  "name": "state",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 38,
+                  "src": "560:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_status_$4",
+                    "typeString": "enum Account.status"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 29,
+                    "name": "status",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 4,
+                    "src": "560:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_status_$4",
+                      "typeString": "enum Account.status"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "559:14:0"
+            },
+            "scope": 57,
+            "src": "499:119:0",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 46,
+              "nodeType": "Block",
+              "src": "694:41:0",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 43,
+                      "name": "status",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4,
+                      "src": "711:6:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_enum$_status_$4_$",
+                        "typeString": "type(enum Account.status)"
+                      }
+                    },
+                    "id": 44,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "lValueRequested": false,
+                    "memberName": "unverified",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": null,
+                    "src": "711:17:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_status_$4",
+                      "typeString": "enum Account.status"
+                    }
+                  },
+                  "functionReturnParameters": 42,
+                  "id": 45,
+                  "nodeType": "Return",
+                  "src": "704:24:0"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 47,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getUnverifiedStatus",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 39,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "656:2:0"
+            },
+            "returnParameters": {
+              "id": 42,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 41,
+                  "name": "state",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 47,
+                  "src": "680:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_status_$4",
+                    "typeString": "enum Account.status"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 40,
+                    "name": "status",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 4,
+                    "src": "680:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_status_$4",
+                      "typeString": "enum Account.status"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "679:14:0"
+            },
+            "scope": 57,
+            "src": "628:107:0",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 55,
+              "nodeType": "Block",
+              "src": "805:39:0",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 52,
+                      "name": "status",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4,
+                      "src": "822:6:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_enum$_status_$4_$",
+                        "typeString": "type(enum Account.status)"
+                      }
+                    },
+                    "id": 53,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "lValueRequested": false,
+                    "memberName": "verified",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": null,
+                    "src": "822:15:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_status_$4",
+                      "typeString": "enum Account.status"
+                    }
+                  },
+                  "functionReturnParameters": 51,
+                  "id": 54,
+                  "nodeType": "Return",
+                  "src": "815:22:0"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 56,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getVerifiedStatus",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 48,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "767:2:0"
+            },
+            "returnParameters": {
+              "id": 51,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 50,
+                  "name": "state",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56,
+                  "src": "791:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_status_$4",
+                    "typeString": "enum Account.status"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 49,
+                    "name": "status",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 4,
+                    "src": "791:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_status_$4",
+                      "typeString": "enum Account.status"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "790:14:0"
+            },
+            "scope": 57,
+            "src": "741:103:0",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 58,
+        "src": "25:821:0"
+      }
+    ],
+    "src": "0:846:0"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "project:/contracts/Account.sol",
+      "exportedSymbols": {
+        "Account": [
+          57
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.5",
+            ".0"
+          ]
+        },
+        "id": 1,
+        "name": "PragmaDirective",
+        "src": "0:23:0"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            57
+          ],
+          "name": "Account",
+          "scope": 58
+        },
+        "children": [
+          {
+            "attributes": {
+              "canonicalName": "Account.status",
+              "name": "status"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "name": "unverified"
+                },
+                "id": 2,
+                "name": "EnumValue",
+                "src": "116:10:0"
+              },
+              {
+                "attributes": {
+                  "name": "verified"
+                },
+                "id": 3,
+                "name": "EnumValue",
+                "src": "136:8:0"
+              }
+            ],
+            "id": 4,
+            "name": "EnumDefinition",
+            "src": "94:56:0"
+          },
+          {
+            "attributes": {
+              "canonicalName": "Account.account",
+              "name": "account",
+              "scope": 57,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "state",
+                  "scope": 7,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "enum Account.status",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "contractScope": null,
+                      "name": "status",
+                      "referencedDeclaration": 4,
+                      "type": "enum Account.status"
+                    },
+                    "id": 5,
+                    "name": "UserDefinedTypeName",
+                    "src": "181:6:0"
+                  }
+                ],
+                "id": 6,
+                "name": "VariableDeclaration",
+                "src": "181:12:0"
+              }
+            ],
+            "id": 7,
+            "name": "StructDefinition",
+            "src": "156:83:0"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "name": "accounts",
+              "scope": 57,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "mapping(address => struct Account.account)",
+              "value": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "type": "mapping(address => struct Account.account)"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "address",
+                      "type": "address"
+                    },
+                    "id": 8,
+                    "name": "ElementaryTypeName",
+                    "src": "254:7:0"
+                  },
+                  {
+                    "attributes": {
+                      "contractScope": null,
+                      "name": "account",
+                      "referencedDeclaration": 7,
+                      "type": "struct Account.account"
+                    },
+                    "id": 9,
+                    "name": "UserDefinedTypeName",
+                    "src": "265:7:0"
+                  }
+                ],
+                "id": 10,
+                "name": "Mapping",
+                "src": "245:28:0"
+              }
+            ],
+            "id": 11,
+            "name": "VariableDeclaration",
+            "src": "245:37:0"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "verifyAccount",
+              "scope": 57,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "addr",
+                      "scope": 25,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 12,
+                        "name": "ElementaryTypeName",
+                        "src": "376:7:0"
+                      }
+                    ],
+                    "id": 13,
+                    "name": "VariableDeclaration",
+                    "src": "376:12:0"
+                  }
+                ],
+                "id": 14,
+                "name": "ParameterList",
+                "src": "375:14:0"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 15,
+                "name": "ParameterList",
+                "src": "397:0:0"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "operator": "=",
+                          "type": "enum Account.status"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": true,
+                              "isPure": false,
+                              "lValueRequested": true,
+                              "member_name": "state",
+                              "referencedDeclaration": 6,
+                              "type": "enum Account.status"
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "isConstant": false,
+                                  "isLValue": true,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "type": "struct Account.account storage ref"
+                                },
+                                "children": [
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 11,
+                                      "type": "mapping(address => struct Account.account storage ref)",
+                                      "value": "accounts"
+                                    },
+                                    "id": 16,
+                                    "name": "Identifier",
+                                    "src": "407:8:0"
+                                  },
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 13,
+                                      "type": "address",
+                                      "value": "addr"
+                                    },
+                                    "id": 17,
+                                    "name": "Identifier",
+                                    "src": "416:4:0"
+                                  }
+                                ],
+                                "id": 18,
+                                "name": "IndexAccess",
+                                "src": "407:14:0"
+                              }
+                            ],
+                            "id": 19,
+                            "name": "MemberAccess",
+                            "src": "407:20:0"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "lValueRequested": false,
+                              "member_name": "verified",
+                              "referencedDeclaration": null,
+                              "type": "enum Account.status"
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 4,
+                                  "type": "type(enum Account.status)",
+                                  "value": "status"
+                                },
+                                "id": 20,
+                                "name": "Identifier",
+                                "src": "430:6:0"
+                              }
+                            ],
+                            "id": 21,
+                            "name": "MemberAccess",
+                            "src": "430:15:0"
+                          }
+                        ],
+                        "id": 22,
+                        "name": "Assignment",
+                        "src": "407:38:0"
+                      }
+                    ],
+                    "id": 23,
+                    "name": "ExpressionStatement",
+                    "src": "407:38:0"
+                  }
+                ],
+                "id": 24,
+                "name": "Block",
+                "src": "397:55:0"
+              }
+            ],
+            "id": 25,
+            "name": "FunctionDefinition",
+            "src": "353:99:0"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "viewAccountState",
+              "scope": 57,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "addr",
+                      "scope": 38,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 26,
+                        "name": "ElementaryTypeName",
+                        "src": "525:7:0"
+                      }
+                    ],
+                    "id": 27,
+                    "name": "VariableDeclaration",
+                    "src": "525:12:0"
+                  }
+                ],
+                "id": 28,
+                "name": "ParameterList",
+                "src": "524:14:0"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "state",
+                      "scope": 38,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "enum Account.status",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "status",
+                          "referencedDeclaration": 4,
+                          "type": "enum Account.status"
+                        },
+                        "id": 29,
+                        "name": "UserDefinedTypeName",
+                        "src": "560:6:0"
+                      }
+                    ],
+                    "id": 30,
+                    "name": "VariableDeclaration",
+                    "src": "560:12:0"
+                  }
+                ],
+                "id": 31,
+                "name": "ParameterList",
+                "src": "559:14:0"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "functionReturnParameters": 31
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": true,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "member_name": "state",
+                          "referencedDeclaration": 6,
+                          "type": "enum Account.status"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": true,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "type": "struct Account.account storage ref"
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 11,
+                                  "type": "mapping(address => struct Account.account storage ref)",
+                                  "value": "accounts"
+                                },
+                                "id": 32,
+                                "name": "Identifier",
+                                "src": "591:8:0"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 27,
+                                  "type": "address",
+                                  "value": "addr"
+                                },
+                                "id": 33,
+                                "name": "Identifier",
+                                "src": "600:4:0"
+                              }
+                            ],
+                            "id": 34,
+                            "name": "IndexAccess",
+                            "src": "591:14:0"
+                          }
+                        ],
+                        "id": 35,
+                        "name": "MemberAccess",
+                        "src": "591:20:0"
+                      }
+                    ],
+                    "id": 36,
+                    "name": "Return",
+                    "src": "584:27:0"
+                  }
+                ],
+                "id": 37,
+                "name": "Block",
+                "src": "574:44:0"
+              }
+            ],
+            "id": 38,
+            "name": "FunctionDefinition",
+            "src": "499:119:0"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "getUnverifiedStatus",
+              "scope": 57,
+              "stateMutability": "pure",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 39,
+                "name": "ParameterList",
+                "src": "656:2:0"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "state",
+                      "scope": 47,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "enum Account.status",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "status",
+                          "referencedDeclaration": 4,
+                          "type": "enum Account.status"
+                        },
+                        "id": 40,
+                        "name": "UserDefinedTypeName",
+                        "src": "680:6:0"
+                      }
+                    ],
+                    "id": 41,
+                    "name": "VariableDeclaration",
+                    "src": "680:12:0"
+                  }
+                ],
+                "id": 42,
+                "name": "ParameterList",
+                "src": "679:14:0"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "functionReturnParameters": 42
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "member_name": "unverified",
+                          "referencedDeclaration": null,
+                          "type": "enum Account.status"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 4,
+                              "type": "type(enum Account.status)",
+                              "value": "status"
+                            },
+                            "id": 43,
+                            "name": "Identifier",
+                            "src": "711:6:0"
+                          }
+                        ],
+                        "id": 44,
+                        "name": "MemberAccess",
+                        "src": "711:17:0"
+                      }
+                    ],
+                    "id": 45,
+                    "name": "Return",
+                    "src": "704:24:0"
+                  }
+                ],
+                "id": 46,
+                "name": "Block",
+                "src": "694:41:0"
+              }
+            ],
+            "id": 47,
+            "name": "FunctionDefinition",
+            "src": "628:107:0"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "getVerifiedStatus",
+              "scope": 57,
+              "stateMutability": "pure",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 48,
+                "name": "ParameterList",
+                "src": "767:2:0"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "state",
+                      "scope": 56,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "enum Account.status",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "status",
+                          "referencedDeclaration": 4,
+                          "type": "enum Account.status"
+                        },
+                        "id": 49,
+                        "name": "UserDefinedTypeName",
+                        "src": "791:6:0"
+                      }
+                    ],
+                    "id": 50,
+                    "name": "VariableDeclaration",
+                    "src": "791:12:0"
+                  }
+                ],
+                "id": 51,
+                "name": "ParameterList",
+                "src": "790:14:0"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "functionReturnParameters": 51
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "member_name": "verified",
+                          "referencedDeclaration": null,
+                          "type": "enum Account.status"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 4,
+                              "type": "type(enum Account.status)",
+                              "value": "status"
+                            },
+                            "id": 52,
+                            "name": "Identifier",
+                            "src": "822:6:0"
+                          }
+                        ],
+                        "id": 53,
+                        "name": "MemberAccess",
+                        "src": "822:15:0"
+                      }
+                    ],
+                    "id": 54,
+                    "name": "Return",
+                    "src": "815:22:0"
+                  }
+                ],
+                "id": 55,
+                "name": "Block",
+                "src": "805:39:0"
+              }
+            ],
+            "id": 56,
+            "name": "FunctionDefinition",
+            "src": "741:103:0"
+          }
+        ],
+        "id": 57,
+        "name": "ContractDefinition",
+        "src": "25:821:0"
+      }
+    ],
+    "id": 58,
+    "name": "SourceUnit",
+    "src": "0:846:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.17+commit.d19bba13.Emscripten.clang"
+  },
+  "networks": {
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0xa7A618FAc1751642b10eab47Faf2b851f18C922b",
+      "transactionHash": "0xd53a20e8d6fb3fd8d258a608fe670fee18bb18029da869d4fc7594f4fe1ae2f7"
+    }
+  },
+  "schemaVersion": "3.4.11",
+  "updatedAt": "2023-03-27T15:14:37.563Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
