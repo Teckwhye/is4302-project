@@ -121,7 +121,7 @@ contract Platform {
 
                 // TODO: transfer ticket to address @ bidderList[i]
                 ticketsLeft--;
-
+                //burnToken()
                 if (ticketsLeft == 0) break;
             }
             if (bidAmount == 0) break;

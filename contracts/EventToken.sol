@@ -4,11 +4,15 @@ import "./ERC20.sol";
 
 contract EventToken {
     ERC20 erc20Contract;
-    uint256 supplyLimit;
+    //uint256 supplyLimit;
     uint256 currentSupply;
     uint256 basePriceOfToken;
+    mapping(address => bool) allowedRecipient; // mapping of addresses that is able to recieve transfer of tokens from users
+    mapping(address => bool) authorisedAddress; // mapping od addresses authorised to use certain functions
     address owner;
 
+    event NewAllowedAddress(address _recipient);
+    event NewAuthorisedAddress(address _address);
     event MintToken(address to, uint256 amount);
     event BurnToken(address to, uint256 amount);
 
@@ -18,11 +22,45 @@ contract EventToken {
         owner = msg.sender;
         currentSupply = 0;
         basePriceOfToken = 50000;
+        allowedRecipient[owner] = true;
+        authorisedAddress[owner] = true;
     }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "You do not have permission to do this");
         _;
+    }
+
+    modifier onlyAllowedRecipient(address _recipent) {
+        require(allowedRecipient[_recipent], "This recipient is not part of allowed addresses to recieve token transfer");
+        _;
+    }
+
+    modifier onlyAuthorisedAddress() {
+        require(authorisedAddress[msg.sender], "You do not have permission to do this");
+        _;
+    }
+
+    /**
+     * Add address to be allowed recipient of transfer of tokens
+     *
+     * param address to add
+     * 
+     */
+    function addAllowedRecipient(address _recipient) public onlyOwner {
+        allowedRecipient[_recipient] = true;
+        emit NewAllowedAddress(_recipient);
+    }
+
+    /**
+     * Add address authorised to use certain functions
+     *
+     * param address to add
+     * 
+     */
+    function addAuthorisedAddress(address _address) public onlyOwner {
+        authorisedAddress[_address] = true;
+        emit NewAuthorisedAddress(_address);
     }
 
     /**
@@ -32,7 +70,7 @@ contract EventToken {
      * param address to get token
      * 
      */
-    function mintToken(uint256 amtOfWei, address _to) public onlyOwner {
+    function mintToken(uint256 amtOfWei, address _to) public onlyAuthorisedAddress {
         uint256 amtOfToken = amtOfWei / basePriceOfToken;
         erc20Contract.mint(_to, amtOfToken);
         currentSupply = currentSupply + amtOfToken;
@@ -46,25 +84,20 @@ contract EventToken {
      * param address to get token
      * 
      */
-     function burnToken(uint256 amtOfToken, address _from) public onlyOwner {
+     function burnToken(uint256 amtOfToken, address _from) public onlyAuthorisedAddress {
         erc20Contract.burn(_from, amtOfToken);
         currentSupply = currentSupply - amtOfToken;
         emit BurnToken(_from, amtOfToken);
     }
 
     /**
-     * Transfer token from one address to another
+     * Transfer token from one address to another (Only allowed recipients are able to recieve tokens)
      *
      * param amount of tokens to bid
      * 
      */
-     function transferFrom(address _from, address _to, uint256 _value) public onlyOwner {
-        erc20Contract.transferFrom(_from, _to, _value);
-    }
-
-    // For checking of token credits of another address (only for owner)
-    function checkEventTokenOf(address _from) public view onlyOwner returns(uint256) {
-        return erc20Contract.balanceOf(_from);
+     function transferFrom(address _from, address _recipient, uint256 _value) public onlyAllowedRecipient(_recipient) {
+        erc20Contract.transferFrom(_from, _recipient, _value);
     }
 
     // For checking of token credits
