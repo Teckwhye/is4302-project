@@ -37,7 +37,7 @@ contract Platform {
 
     /* Ensure caller is a buyer */
     modifier isBuyer() {
-        require(accountContract.viewAccountState(msg.sender) == accountContract.getUnverifiedStatus());
+        require(accountContract.viewAccountState(msg.sender) == accountContract.getUnverifiedStatus(), "You are not a buyer");
         _;
     }
 
@@ -45,6 +45,11 @@ contract Platform {
     modifier isOrganiser() {
         require(accountContract.viewAccountState(msg.sender) == accountContract.getVerifiedStatus(),"You are not a verified seller");
         _;
+    }
+
+    /* Verify accounts that has been vetted */
+    function verifyAccount(address addr) public {
+        accountContract.verifyAccount(addr, msg.sender);
     }
 
     // list Event on Platform
