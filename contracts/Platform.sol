@@ -47,11 +47,6 @@ contract Platform {
         _;
     }
 
-    /* Verify accounts that has been vetted */
-    function verifyAccount(address addr) public {
-        accountContract.verifyAccount(addr, msg.sender);
-    }
-
     // list Event on Platform
     function listEvent(string memory title,
         string memory venue,
