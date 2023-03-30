@@ -60,6 +60,43 @@ contract("Platform", function (accounts) {
         truffleAssert.eventEmitted(buyTicket, "TransferToBuyerSuccessful");
     });
 
+    it("Account(Seller) unable to list event if yet to be verified", async () => {
+        await truffleAssert.reverts(
+            platformInstance.listEvent(
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: 0}),
+            "You are not a verified seller"
+        );
+    });
+
+    it("Account(Seller) not verified at the start", async () => {
+        var state = await accountInstance.viewAccountState.call(accounts[1]);
+        var unverifiedStatus = await accountInstance.getUnverifiedStatus.call();
+        await assert.strictEqual(state.toString(),unverifiedStatus.toString(),"Account is already verified.");
+    });
+
+    it("Verify account(Seller)", async () => {
+        await accountInstance.verifyAccount(accounts[1]);
+        var state = await accountInstance.viewAccountState.call(accounts[1]);
+        var verifiedStatus = await accountInstance.getVerifiedStatus.call();
+        await assert.strictEqual(state.toString(),verifiedStatus.toString(),"Account is not verified.");
+    });
+
+    it("Insufficient deposits to list event", async () => {
+        await truffleAssert.reverts(
+            platformInstance.listEvent(
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: 0}),
+            "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event."
+        );
+    });
+
+    it("Event listed successfully", async () => {
+        await platformInstance.listEvent(
+            "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
+        latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        var eventTitle = await eventInstance.getEventTitle(latestEventId);
+        await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
+    });
+
     it("Insufficent funds to buy tickets", async () => {
         await truffleAssert.reverts(
             platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: 0}),
