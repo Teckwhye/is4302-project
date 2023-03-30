@@ -2,8 +2,6 @@ pragma solidity ^0.5.0;
 
 contract Account {
     // Struct creation for the account member
-    address platformAddr;
-
     enum status {
         unverified,
         verified
@@ -25,44 +23,70 @@ contract Account {
         _;
     }
 
-    /* Platform address initialisation that can only be set once */
-    function setPlatformAddress(address addr) public {
-        require(platformAddr == address(0), "Platform address initialisation can only be set once");
-        platformAddr = addr;
-    }
-
-    /* Certify an account */
+    /**
+     * certify an account to be given the permission to verify other accounts
+     *
+     * param addr       address of the account to be certified
+     */
     function certifyAccount(address addr) public {
         accounts[addr].certified = true;
         uint256 newCertifyId = numCertifiers++;
         certifiers[newCertifyId] = addr;
     }
 
-    /* Ensures an account is verified */
-    function verifyAccount(address addr, address verifier) public isCertified() {
+    /**
+     * Verify an account to be able to list events
+     *
+     * param addr       address of the account to be verified
+     */
+    function verifyAccount(address addr) public isCertified() {
         accounts[addr].state = status.verified;
-        accounts[addr].verifier = verifier;
+        accounts[addr].verifier = msg.sender;
     }
 
-    /* View account verification state*/
+    /**
+     * View the state of an account
+     *
+     * param addr       address of the account
+     */
     function viewAccountState(address addr) public view returns (status state) {
         return accounts[addr].state;
     }
 
-    /* View if account have the power to certify other addresses*/
+    /**
+     * View the certified status of an account
+     *
+     * param addr       address of the account
+     * returns bool     true if certified, else false
+     */
     function viewCertifiedStatus(address addr) public view returns (bool) {
         return accounts[addr].certified;
     }
 
-    /* View the address whom verified the account */
+    /**
+     * View the verifier of an account
+     *
+     * param addr       address of the account
+     * returns address  address of the verifier
+     */
     function viewAccountVerifier(address addr) public view returns (address) {
         return accounts[addr].verifier;
     }
     
+    /**
+     * Obtain enum value of an unverified state
+     *
+     * returns status state of the unverified status
+     */
     function getUnverifiedStatus() public pure returns (status state) {
         return status.unverified;
     }
 
+    /**
+     * Obtain enum value of a verified state
+     *
+     * returns status state of the verified status
+     */
     function getVerifiedStatus() public pure returns (status state) {
         return status.verified;
     }
