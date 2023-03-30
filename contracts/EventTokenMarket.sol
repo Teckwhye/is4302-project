@@ -8,7 +8,7 @@ contract EventTokenMarket {
    EventTokenMarketAlgorithm marketAlgorithmContract;    // Our event token algorithm contract
    uint256 public _comissionFeePercentage;               // What is the comission fee
    uint256 totalComissionFee;
-   address _owner = msg.sender;                          // Owner of event token market
+   address _owner;                                       // Owner of event token market
    mapping(address => uint256[]) usersCurrentListing;     // Save history of user listing
 
    event SellOrderListed(uint256 orderId, address _seller, uint256 _quantity);
@@ -27,6 +27,7 @@ contract EventTokenMarket {
         require(comissionFeePercentage > 0 && comissionFeePercentage < 101, "Comission Fee can only be from 1-100");
         _comissionFeePercentage = comissionFeePercentage;
         totalComissionFee = 0;
+        _owner = msg.sender;
    }
 
    /**
