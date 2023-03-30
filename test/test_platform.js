@@ -21,20 +21,20 @@ contract("Platform", function (accounts) {
     it("Account(Seller) unable to list event if yet to be verified", async () => {
         await truffleAssert.reverts(
             platformInstance.listEvent(
-                "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,600,600,65, accounts[2],{from: accounts[2], value: 0}),
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,600,600,65, accounts[1],{from: accounts[1], value: 0}),
             "You are not a verified seller"
         );
     });
 
     it("Account(Seller) not verified at the start", async () => {
-        var state = await accountInstance.viewAccountState.call(accounts[2]);
+        var state = await accountInstance.viewAccountState.call(accounts[1]);
         var unverifiedStatus = await accountInstance.getUnverifiedStatus.call();
         await assert.strictEqual(state.toString(),unverifiedStatus.toString(),"Account is already verified.");
     });
 
     it("Verify account(Seller)", async () => {
-        await accountInstance.verifyAccount(accounts[2]);
-        var state = await accountInstance.viewAccountState.call(accounts[2]);
+        await accountInstance.verifyAccount(accounts[1]);
+        var state = await accountInstance.viewAccountState.call(accounts[1]);
         var verifiedStatus = await accountInstance.getVerifiedStatus.call();
         await assert.strictEqual(state.toString(),verifiedStatus.toString(),"Account is not verified.");
     });
@@ -42,21 +42,21 @@ contract("Platform", function (accounts) {
     it("Insufficient deposits to list event", async () => {
         await truffleAssert.reverts(
             platformInstance.listEvent(
-                "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,5,5,65,accounts[2], {from: accounts[2], value: 0}),
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,5,5,65,accounts[1], {from: accounts[1], value: 0}),
             "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event."
         );
     });
 
     it("Event listed successfully", async () => {
         await platformInstance.listEvent(
-            "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,5,5,65,accounts[2], {from: accounts[2], value: oneEth});
+            "Harry Styles concert", "Stadium", 2024, 03, 21, 18,00,00,5,5,65,accounts[1], {from: accounts[1], value: oneEth});
         var eventTitle = await eventInstance.getEventTitle(0);
         await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
     });
 
     it("Insufficent funds to buy tickets", async () => {
         await truffleAssert.reverts(
-            platformInstance.buyTickets(1, 1, 500, {from: accounts[1], value: 0}),
+            platformInstance.buyTickets(1, 1, 500, {from: accounts[2], value: 0}),
             "Buyer has insufficient ETH to buy tickets"
         );
     });
@@ -64,7 +64,7 @@ contract("Platform", function (accounts) {
     it("Quantity exceeded", async () => {
         // Maximum ticket purchase limit is set to 4
         await truffleAssert.reverts(
-            platformInstance.buyTickets(1, 10, 500, {from: accounts[1], value: 100000}),
+            platformInstance.buyTickets(1, 10, 500, {from: accounts[2], value: 100000}),
             "You have passed the maximum bulk purchase limit"
         );
     });
@@ -77,7 +77,7 @@ contract("Platform", function (accounts) {
         // assert.strictEqual(balance , expectedReturn, "Incorrect payback");
 
         // not the best way
-        let buyTicketProcess = await platformInstance.buyTickets(1, 3, 300, {from: accounts[1], value: 1000})
+        let buyTicketProcess = await platformInstance.buyTickets(1, 3, 300, {from: accounts[2], value: 1000})
         truffleAssert.eventEmitted(buyTicketProcess, 'TransferToBuyerSuccessful');
     });
 

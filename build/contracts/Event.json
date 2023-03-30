@@ -9027,12 +9027,13 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x67610445278dcB5f231177671b3dfa60F3eDf157",
-      "transactionHash": "0xa2a7611d2a1d96557d8f1deff10c8a512976e5f39212e5958e0871010b739194"
+      "address": "0x6A51013FA7D26819354f8E636617c70a8E6C0258",
+      "transactionHash": "0x2b729a55e130256a4d54e4534d46713ba311976c55b445e299ced807b6ce0347"
     }
   },
   "schemaVersion": "3.4.11",
-  "updatedAt": "2023-03-27T15:14:37.707Z",
+  "updatedAt": "2023-03-30T12:39:44.240Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },
