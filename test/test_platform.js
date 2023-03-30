@@ -32,34 +32,6 @@ contract("Platform", function (accounts) {
     console.log("Testing Platform contract");
     var latestEventId;
 
-    it("List Event", async () => {
-        await accountInstance.verifyAccount(accounts[1]);
-        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
-        latestEventId = (await eventInstance.getLatestEventId()).toNumber();
-        const title = await eventInstance.getEventTitle(latestEventId);
-        await assert("Title 0", title, "Failed to create event");
-    });
-
-    it("Commence Bidding", async () => {
-        let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
-    });
-
-    it("Place Bidding", async () => {
-        let bidPlaced = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth});
-        truffleAssert.eventEmitted(bidPlaced, "BidPlaced");
-    });
-
-    it("Close Bidding", async () => {
-        let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
-    });
-
-    it("Buy Ticket", async () => {
-        let buyTicket = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth.dividedBy(4)});
-        truffleAssert.eventEmitted(buyTicket, "TransferToBuyerSuccessful");
-    });
-
     it("Account(Seller) unable to list event if yet to be verified", async () => {
         await truffleAssert.reverts(
             platformInstance.listEvent(
@@ -95,6 +67,34 @@ contract("Platform", function (accounts) {
         latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         var eventTitle = await eventInstance.getEventTitle(latestEventId);
         await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
+    });
+
+    it("List Event", async () => {
+        await accountInstance.verifyAccount(accounts[1]);
+        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        const title = await eventInstance.getEventTitle(latestEventId);
+        await assert("Title 0", title, "Failed to create event");
+    });
+
+    it("Commence Bidding", async () => {
+        let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
+    });
+
+    it("Place Bidding", async () => {
+        let bidPlaced = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth});
+        truffleAssert.eventEmitted(bidPlaced, "BidPlaced");
+    });
+
+    it("Close Bidding", async () => {
+        let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+    });
+
+    it("Buy Ticket", async () => {
+        let buyTicket = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth.dividedBy(4)});
+        truffleAssert.eventEmitted(buyTicket, "TransferToBuyerSuccessful");
     });
 
     it("Insufficent funds to buy tickets", async () => {
@@ -173,15 +173,15 @@ contract("Platform", function (accounts) {
         truffleAssert.eventEmitted(bidClosed, "BidBuy");
 
         // Ensure accurate ticket distribution
-        let owner1 = await ticketInstance.getTicketOwner(5); // ticketId 5 belongs to accounts[2]
+        let owner1 = await ticketInstance.getTicketOwner(10); // ticketId 10 belongs to accounts[2]
         assert.strictEqual(owner1, accounts[2]);
-        let owner2 = await ticketInstance.getTicketOwner(6); // ticketId 6,7,8 belongs to accounts[4] 
+        let owner2 = await ticketInstance.getTicketOwner(11); // ticketId 11,12,13 belongs to accounts[4] 
         assert.strictEqual(owner2, accounts[4]);
-        let owner3 = await ticketInstance.getTicketOwner(7); // ticketId 6,7,8 belongs to accounts[4] 
+        let owner3 = await ticketInstance.getTicketOwner(12); // ticketId 11,12,13 belongs to accounts[4] 
         assert.strictEqual(owner3, accounts[4]);
-        let owner4 = await ticketInstance.getTicketOwner(8); // ticketId 6,7,8 belongs to accounts[4] 
+        let owner4 = await ticketInstance.getTicketOwner(13); // ticketId 11,12,13 belongs to accounts[4] 
         assert.strictEqual(owner4, accounts[4]);
-        let owner5 = await ticketInstance.getTicketOwner(9); // ticketId 9 belongs to accounts[3] 
+        let owner5 = await ticketInstance.getTicketOwner(14); // ticketId 15 belongs to accounts[3] 
         assert.strictEqual(owner5, accounts[3]);
     });
 
