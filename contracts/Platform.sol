@@ -14,6 +14,7 @@ contract Platform {
     event BidCommenced (uint256 eventId);
     event BidPlaced (uint256 eventId, address buyer, uint256 tokenBid);
     event BidBuy (uint256 eventId);
+    event BidUpdate (uint256 eventId, address buyer, uint256 tokenBid);
     event TransferToBuyerSuccessful(address to, uint256 amount);
 
     mapping(address => uint256) sellerDepositedValue;
@@ -112,6 +113,44 @@ contract Platform {
         emit BidPlaced(eventId, msg.sender, tokenBid);
     }
 
+    // Update bid
+    function updateBid(uint256 eventId, uint256 tokenBid) public isBuyer() {
+        bidInfo memory currentBidInfo = addressBiddings[msg.sender][eventId];
+        require(tokenBid > currentBidInfo.tokenPerTicket, "New token bid must be higher than current bid");
+
+        uint256 tokenDifference = tokenBid - currentBidInfo.tokenPerTicket;
+        uint256 totalTokenDifference = tokenDifference * currentBidInfo.quantity;
+        require(eventTokenContract.checkAllowance(msg.sender, address(this)) >= totalTokenDifference, "Buyer has not approved sufficient EventTokens");
+        eventTokenContract.approvedTransferFrom(msg.sender, address(this), address(this), totalTokenDifference);
+
+        // Delete old bid
+        for (uint256 i = currentBidInfo.firstIndexForEventBiddings; i < currentBidInfo.firstIndexForEventBiddings + currentBidInfo.quantity; i++) {
+            delete eventBiddings[eventId][currentBidInfo.tokenPerTicket][i];
+        }
+
+        // Add new bid into eventBiddings
+        uint256 firstIdx;
+        for (uint8 i = 0; i < currentBidInfo.quantity; i++) {
+            eventBiddings[eventId][tokenBid].push(msg.sender);
+            if (i == 0) {
+                firstIdx = eventBiddings[eventId][tokenBid].length - 1;
+            }
+        }
+
+        // Update bidInfo
+        currentBidInfo.tokenPerTicket = tokenBid;
+        currentBidInfo.firstIndexForEventBiddings = firstIdx;
+        addressBiddings[msg.sender][eventId] = currentBidInfo;
+
+        // Update top bid
+        if (tokenBid > eventTopBid[eventId]) {
+            eventTopBid[eventId] = tokenBid;
+        }
+
+        emit BidUpdate(eventId, msg.sender, tokenBid);
+    }
+
+
     // Close bidding and transfer tickets to top bidders
     function closeBidding(uint256 eventId) public {
         require(msg.sender == eventContract.getEventSeller(eventId), "Only seller can close bidding");
@@ -130,6 +169,7 @@ contract Platform {
                 ticketContract.transferTicket(ticketId, bidderList[i]); 
                 ticketId++;
                 ticketsLeft--;
+
                 //burnToken()
                 if (ticketsLeft == 0) break;
             }
