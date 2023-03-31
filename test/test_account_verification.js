@@ -26,10 +26,21 @@ contract("AccountVerification", function (accounts) {
         // make account[0] certified to verify organisations
         let certify = await accountInstance.certifyAccount(accounts[0]);
 
-        // Set account 5 to be verified using account[0]
-        let verifyAccount5 = await accountInstance.verifyAccount(accounts[5], {from: accounts[0]});
-        assert(await accountInstance.viewAccountState(accounts[5]), await accountInstance.getVerifiedStatus() );
-        assert(await accountInstance.viewAccountVerifier(accounts[5]), accounts[0]);
+        // Set account[1] to be verified using account[0]
+        let verifyAccount5 = await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
+        assert(await accountInstance.viewAccountState(accounts[1]), await accountInstance.getVerifiedStatus() );
+        assert(await accountInstance.viewAccountVerifier(accounts[1]), accounts[0]);
+    });
+
+    it("Revoking permission an account", async () => {
+        // make account[0] certified to verify organisations
+        let certify = await accountInstance.uncertifyAccount(accounts[0]);
+
+        // account[0] should not be able to verify accounts
+        await truffleAssert.reverts(
+            accountInstance.verifyAccount(accounts[1], {from: accounts[0]}),
+            "Account not certified"
+        );
     });
 
             
