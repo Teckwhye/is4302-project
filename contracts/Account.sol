@@ -1,10 +1,16 @@
 pragma solidity ^0.5.0;
 
 contract Account {
+    address owner;
+
     // Struct creation for the account member
     enum status {
         unverified,
         verified
+    }
+
+    constructor() public {
+        owner = msg.sender;
     }
 
     struct account {
@@ -14,6 +20,11 @@ contract Account {
     }
 
     mapping (address => account) accounts;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "You do not have permission to do this");
+        _;
+    }
 
     modifier isCertified() {
         require(accounts[msg.sender].certified, "Account not certified");
@@ -25,7 +36,7 @@ contract Account {
      *
      * param addr       address of the account to be certified
      */
-    function certifyAccount(address addr) public {
+    function certifyAccount(address addr) public onlyOwner() {
         require(accounts[addr].certified == false, "Account is already certified");
         accounts[addr].certified = true;
     }
@@ -34,11 +45,10 @@ contract Account {
      * uncertify an account to revoke permission to verify other accounts
      * param addr       address of the account to be uncertified
      */
-    function uncertifyAccount(address addr) public {
+    function uncertifyAccount(address addr) public onlyOwner() {
         require(accounts[addr].certified == true, "Account is not certified");
         accounts[addr].certified = false;
     }
-
 
     /**
      * Verify an account to be able to list events
