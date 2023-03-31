@@ -14,9 +14,6 @@ contract Account {
     }
 
     mapping (address => account) accounts;
-    // for future extension where multiple certifiers can cross-check
-    mapping(uint256 => address) public certifiers;
-    uint256 public numCertifiers = 0;
 
     modifier isCertified() {
         require(accounts[msg.sender].certified, "Account not certified");
