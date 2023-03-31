@@ -161,17 +161,21 @@ contract Platform {
         uint256 ticketId = eventContract.getEventFirstTicketId(eventId);
 
         // Tickets given out starting from top bidders
-        while (ticketsLeft != 0) {
+        while (true) {
             address[] memory bidderList = eventBiddings[eventId][bidAmount];
             for (uint256 i = 0; i < bidderList.length; i++) {
                 if (bidderList[i] == address(0)) continue; 
 
-                ticketContract.transferTicket(ticketId, bidderList[i]); 
-                ticketId++;
-                ticketsLeft--;
-
-                //burnToken()
-                if (ticketsLeft == 0) break;
+                if (ticketsLeft != 0) {
+                    ticketContract.transferTicket(ticketId, bidderList[i]); 
+                    ticketId++;
+                    ticketsLeft--;
+                    //burnToken()
+                } else { 
+                    // return ETH back to unsuccessful bidders when ticketsLeft == 0 
+                    address payable recipient = address(uint168(bidderList[i]));
+                    recipient.transfer(eventContract.getEventTicketPrice(eventId));
+                }
             }
             if (bidAmount == 0) break;
             bidAmount--;

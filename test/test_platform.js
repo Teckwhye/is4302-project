@@ -245,4 +245,39 @@ contract("Platform", function (accounts) {
         assert.strictEqual(owner1, accounts[3]);
     });
 
+    it("Test Unsuccessful Bid Return ETH", async () => {
+        // Listing of event with 1 tickets
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        const title = await eventInstance.getEventTitle(latestEventId);
+        await assert("Title 1", title, "Failed to create event");
+
+        // Commence bidding
+        let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
+
+        // accounts[2] place bid for 1 ticket with 0 tokens each
+        let bidPlaced1 = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth});
+        truffleAssert.eventEmitted(bidPlaced1, "BidPlaced");
+
+        // accounts[3] place bid for 1 ticket with 0 tokens each
+        let initialbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
+        let bidPlaced2 = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[3], value: oneEth});
+        let gasUsed = new BigNumber(bidPlaced2.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(bidPlaced2.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+        truffleAssert.eventEmitted(bidPlaced2, "BidPlaced");
+   
+        // Close bid
+        let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+
+        // Ensure ETH is returned to unsuccessful bidder accounts[3]
+        let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
+        // console.log(balance1);
+        // console.log(balance2);
+        await assert(finalbalance.isEqualTo(initialbalance.minus(gasPrice.multipliedBy(gasUsed))), "Did not return ETH back to unsuccessful bidders");
+
+    });
+
 })
