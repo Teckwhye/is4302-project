@@ -26,6 +26,7 @@ contract Account {
      * param addr       address of the account to be certified
      */
     function certifyAccount(address addr) public {
+        require(accounts[addr].certified == false, "Account is already certified");
         accounts[addr].certified = true;
         uint256 newCertifyId = numCertifiers++;
         certifiers[newCertifyId] = addr;
