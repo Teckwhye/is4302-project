@@ -32,7 +32,16 @@ contract("AccountVerification", function (accounts) {
         assert(await accountInstance.viewAccountVerifier(accounts[1]), accounts[0]);
     });
 
-    it("Revoking permission an account", async () => {
+    it("Revoking permission for an account to list events", async () => {
+        // accounts[0] revokes account[1] to make it unable to list events
+        let certify = await accountInstance.unverifyAccount(accounts[1], {from: accounts[0]});
+
+        // account[0] should not be able to verify accounts
+        assert(await accountInstance.viewAccountState(accounts[1]), await accountInstance.getUnverifiedStatus() );
+        assert(await accountInstance.viewAccountVerifier(accounts[1]), accounts[0]);
+    });
+
+    it("Revoking permission for an account to certify", async () => {
         // make account[0] certified to verify organisations
         let certify = await accountInstance.uncertifyAccount(accounts[0]);
 
