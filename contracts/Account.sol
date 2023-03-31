@@ -61,6 +61,16 @@ contract Account {
     }
 
     /**
+     * Unverify an account to restrict listing events
+     *
+     * param addr       address of the account to be unverified
+     */
+    function unverifyAccount(address addr) public isCertified() {
+        accounts[addr].state = status.unverified;
+        accounts[addr].verifier = msg.sender;
+    }
+
+    /**
      * View the state of an account
      *
      * param addr       address of the account
