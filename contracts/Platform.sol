@@ -130,7 +130,7 @@ contract Platform {
                 ticketContract.transferTicket(ticketId, bidderList[i]); 
                 ticketId++;
                 ticketsLeft--;
-
+                //burnToken()
                 if (ticketsLeft == 0) break;
             }
             if (bidAmount == 0) break;
