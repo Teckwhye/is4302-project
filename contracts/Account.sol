@@ -30,6 +30,7 @@ contract Account {
         accounts[addr].certified = true;
     }
 
+    }
     /**
      * Verify an account to be able to list events
      *
