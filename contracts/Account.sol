@@ -30,7 +30,16 @@ contract Account {
         accounts[addr].certified = true;
     }
 
+    /**
+     * uncertify an account to revoke permission to verify other accounts
+     * param addr       address of the account to be uncertified
+     */
+    function uncertifyAccount(address addr) public {
+        require(accounts[addr].certified == true, "Account is not certified");
+        accounts[addr].certified = false;
     }
+
+
     /**
      * Verify an account to be able to list events
      *
