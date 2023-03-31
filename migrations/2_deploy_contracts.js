@@ -15,6 +15,6 @@ module.exports = (deployer, network, account) => {
         return deployer.deploy(Account)
     })
     .then(function () {
-        return deployer.deploy(Platform, Account.address, EventToken.address, Event.address)
+        return deployer.deploy(Platform, Account.address, EventToken.address, Event.address, Ticket.address)
     });
 };
