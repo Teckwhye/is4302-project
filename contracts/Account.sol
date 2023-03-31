@@ -28,8 +28,6 @@ contract Account {
     function certifyAccount(address addr) public {
         require(accounts[addr].certified == false, "Account is already certified");
         accounts[addr].certified = true;
-        uint256 newCertifyId = numCertifiers++;
-        certifiers[newCertifyId] = addr;
     }
 
     /**
