@@ -189,11 +189,6 @@ contract Platform {
         emit BidBuy(eventId);
     }   
 
-    // Return unsuccessful bidders their corresponding ETH and tokens
-    function returnBiddings() public {
-
-    }
-
     /* Viewing the number of tickets left for an event */
     function viewTicketsLeft(uint256 eventId) public view returns (uint256) {
         return eventContract.getEventTicketsLeft(eventId);
