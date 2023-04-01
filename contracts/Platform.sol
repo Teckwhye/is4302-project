@@ -117,6 +117,7 @@ contract Platform {
     // Update bid
     function updateBid(uint256 eventId, uint256 tokenBid) public isBuyer() {
         bidInfo memory currentBidInfo = addressBiddings[msg.sender][eventId];
+        require(currentBidInfo.quantity != 0, "Cant update bid without placing bid first");
         require(tokenBid > currentBidInfo.tokenPerTicket, "New token bid must be higher than current bid");
 
         uint256 tokenDifference = tokenBid - currentBidInfo.tokenPerTicket;
