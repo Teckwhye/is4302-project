@@ -196,7 +196,7 @@ contract("Platform", function (accounts) {
     });
 
     it("Test Updating of Bid", async () => {
-        // Listing of event with 1 tickets
+        // Listing of event with 1 ticket
         await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
@@ -246,7 +246,7 @@ contract("Platform", function (accounts) {
     });
 
     it("Test Unsuccessful Bid Return ETH", async () => {
-        // Listing of event with 1 tickets
+        // Listing of event with 1 ticket
         await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
@@ -274,8 +274,6 @@ contract("Platform", function (accounts) {
 
         // Ensure ETH is returned to unsuccessful bidder accounts[3]
         let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
-        // console.log(balance1);
-        // console.log(balance2);
         await assert(finalbalance.isEqualTo(initialbalance.minus(gasPrice.multipliedBy(gasUsed))), "Did not return ETH back to unsuccessful bidders");
 
     });

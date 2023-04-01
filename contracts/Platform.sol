@@ -180,9 +180,11 @@ contract Platform {
             if (bidAmount == 0) break;
             bidAmount--;
         }
+        
+        // Update event tickets left
+        eventContract.setEventTicketsLeft(eventId, ticketsLeft);
 
-        // TODO: Return unsuccessful bidders
-        // returnBiddings()
+        // Change state to allow normal buying
         eventContract.setEventBidState(eventId, Event.bidState.buy);
         emit BidBuy(eventId);
     }   
