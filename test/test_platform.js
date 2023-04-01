@@ -272,10 +272,62 @@ contract("Platform", function (accounts) {
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
         truffleAssert.eventEmitted(bidClosed, "BidBuy");
 
+        // Ensure accurate ticket distribution
+        let owner1 = await ticketInstance.getTicketOwner(16); // ticketId 16 belongs to accounts[2]
+        assert.strictEqual(owner1, accounts[2]);
+
         // Ensure ETH is returned to unsuccessful bidder accounts[3]
         let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
         await assert(finalbalance.isEqualTo(initialbalance.minus(gasPrice.multipliedBy(gasUsed))), "Did not return ETH back to unsuccessful bidders");
 
+    });
+
+    it("Test Successful Bid -> Refund Ticket -> Buy Ticket", async () => {
+        // Listing of event with 1 ticket
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        const title = await eventInstance.getEventTitle(latestEventId);
+        await assert("Title 1", title, "Failed to create event");
+
+        // Commence bidding
+        let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
+
+        // accounts[2] place bid for 1 ticket with 0 tokens each
+        let bidPlaced1 = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth});
+        truffleAssert.eventEmitted(bidPlaced1, "BidPlaced");
+   
+        // Close bid
+        let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+
+        // Ensure accurate ticket distribution
+        let owner1 = await ticketInstance.getTicketOwner(17); // ticketId 17 belongs to accounts[2]
+        assert.strictEqual(owner1, accounts[2]);
+
+        // accounts[2] transfer ticket to platform then refund ticket
+        await ticketInstance.transferTicket(17, platformInstance.address, {from: accounts[2]});
+
+        let initialbalance = new BigNumber(await web3.eth.getBalance(accounts[2]));
+        let refundTicket1 = await platformInstance.refundTicket(17, {from: accounts[2]});
+        truffleAssert.eventEmitted(refundTicket1, "RefundTicket");
+        let gasUsed = new BigNumber(refundTicket1.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(refundTicket1.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+
+        // Ensure ETH is refunded to refunder accounts[2] at half price
+        let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[2]));
+        let halfPriceOfTicket = new BigNumber(await eventInstance.getEventTicketPrice(latestEventId)).dividedBy(2);
+        // Initial - GasFees + Refund = Final ====> Initial - GasFees = Final - Refund
+        await assert((finalbalance.minus(halfPriceOfTicket)).isEqualTo((initialbalance.minus(gasPrice.multipliedBy(gasUsed)))), "Did not return ETH back to refunder");
+
+        // accounts[3] buy ticket
+        let buyTicket1 = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth});
+        truffleAssert.eventEmitted(buyTicket1, "TransferToBuyerSuccessful");
+
+        // Ensure accurate ticket distribution
+        let owner2 = await ticketInstance.getTicketOwner(17); // ticketId 17 belongs to accounts[3]
+        assert.strictEqual(owner2, accounts[3]);
     });
 
 })

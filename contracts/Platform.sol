@@ -15,6 +15,7 @@ contract Platform {
     event BidPlaced (uint256 eventId, address buyer, uint256 tokenBid);
     event BidBuy (uint256 eventId);
     event BidUpdate (uint256 eventId, address buyer, uint256 tokenBid);
+    event RefundTicket (uint256 ticketId, address refunder);
     event TransferToBuyerSuccessful(address to, uint256 amount);
 
     mapping(address => uint256) sellerDepositedValue;
@@ -192,6 +193,23 @@ contract Platform {
     /* Viewing the number of tickets left for an event */
     function viewTicketsLeft(uint256 eventId) public view returns (uint256) {
         return eventContract.getEventTicketsLeft(eventId);
+    }
+
+    /* Ticket owners refund ticket */
+    function refundTicket(uint256 ticketId) public payable isBuyer() {
+        //Ensure ticket has been transfered to platform
+        require(ticketContract.getTicketPrevOwner(ticketId) == msg.sender, "Not owner of ticket");
+        require(ticketContract.getTicketOwner(ticketId) == address(this), "Ticket not transfered to platform yet");
+
+        // Update tickets left
+        uint256 eventId = ticketContract.getTicketEvent(ticketId);
+        eventContract.setEventTicketsLeft(eventId, eventContract.getEventTicketsLeft(eventId) + 1);
+        
+        // ETH transfer back to buyer at 1/2 price
+        uint256 refundPrice = eventContract.getEventTicketPrice(eventId) / 2;
+        msg.sender.transfer(refundPrice);
+
+        emit RefundTicket(ticketId, msg.sender);
     }
 
     /* Buyers buying tickets for an event */
