@@ -164,6 +164,10 @@ contract Platform {
         uint256 totalPrice = eventContract.getEventTicketPrice(eventId) * quantity;
         require(msg.value >= totalPrice, "Buyer has insufficient ETH to buy tickets");
 
+        // Set remaining tickets after someone buys ticket(s)
+        uint256 remainingTickets = eventContract.getEventTicketsLeft(eventId) - quantity;
+        eventContract.setEventTicketsLeft(eventId,remainingTickets);
+
         // Transfer ticket
         uint256 firstTicketId = eventContract.getEventFirstTicketId(eventId);
         uint256 lastTicketId = firstTicketId + eventContract.getEventCapacity(eventId) - 1;
