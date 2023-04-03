@@ -56,15 +56,14 @@ contract Platform {
         string memory venue,
         uint256 year, uint256 month, uint256 day, uint256 hour, uint256 minute, uint256 second,
         uint256 capacity,
-        uint256 ticketsLeft,
         uint256 priceOfTicket,
         address seller) public payable isOrganiser() returns (uint256) {
 
         // however msg.value here will not be sent to event contract. msg.value at event contract is 0.
         require(msg.value >= calMinimumDeposit(capacity,priceOfTicket) * 1 wei, "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event.");
 
-        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day, hour, minute, second, capacity, ticketsLeft, priceOfTicket, seller);
-
+        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day, hour, minute, second, capacity, seller);
+        sellerDepositedValue[msg.sender] = msg.value;
         return newEventId;
     }
 
