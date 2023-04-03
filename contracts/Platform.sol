@@ -187,8 +187,17 @@ contract Platform {
     function endEvent(uint256 eventId) public isOrganiser() {
         address seller = eventContract.getEventSeller(eventId);
         require(seller == msg.sender, "Only original seller can end event");
-        eventContract.endEvent(eventId);
         msg.sender.transfer(sellerDepositedValue[seller]);
+
+        // Calculating ticket sales
+        uint256 numOfTicketsSold = eventContract.getEventCapacity(eventId) - eventContract.getEventTicketsLeft(eventId);
+        uint256 ticketSales = numOfTicketsSold * eventContract.getEventTicketPrice(eventId);
+
+        // Platform keeps 5% commission of ticket sales, rest goes to Seller when event ends
+        uint256 sellerProfits = 95 * ticketSales /100;
+        msg.sender.transfer(sellerProfits);
+
+        eventContract.endEvent(eventId);
     }
 
     function calMinimumDeposit(uint256 capacity, uint256 priceOfTicket) public pure returns(uint256){
