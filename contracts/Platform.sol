@@ -41,7 +41,7 @@ contract Platform {
 
     /* Ensure caller is a buyer */
     modifier isBuyer() {
-        require(accountContract.viewAccountState(msg.sender) == accountContract.getUnverifiedStatus());
+        require(accountContract.viewAccountState(msg.sender) == accountContract.getUnverifiedStatus(), "You are not a buyer");
         _;
     }
 

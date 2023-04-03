@@ -46,8 +46,18 @@ contract("Platform", function (accounts) {
         await assert.strictEqual(state.toString(),unverifiedStatus.toString(),"Account is already verified.");
     });
 
+    it("Account(Seller) is a verified organisations", async () => {
+        // make account[0] certified to verify organisations
+        let certify = await accountInstance.certifyAccount(accounts[0]);
+
+        // Set account[1] to be verified using account[0]
+        let verifyAccount5 = await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
+        assert(await accountInstance.viewAccountState(accounts[1]), await accountInstance.getVerifiedStatus() );
+        assert(await accountInstance.viewAccountVerifier(accounts[1]), accounts[0]);
+    });
+
     it("Verify account(Seller)", async () => {
-        await accountInstance.verifyAccount(accounts[1]);
+        await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
         var state = await accountInstance.viewAccountState.call(accounts[1]);
         var verifiedStatus = await accountInstance.getVerifiedStatus.call();
         await assert.strictEqual(state.toString(),verifiedStatus.toString(),"Account is not verified.");
@@ -70,7 +80,7 @@ contract("Platform", function (accounts) {
     });
 
     it("List Event", async () => {
-        await accountInstance.verifyAccount(accounts[1]);
+        await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
         await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
