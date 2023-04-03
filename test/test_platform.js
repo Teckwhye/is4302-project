@@ -35,7 +35,7 @@ contract("Platform", function (accounts) {
     it("Account(Seller) unable to list event if yet to be verified", async () => {
         await truffleAssert.reverts(
             platformInstance.listEvent(
-                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: 0}),
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 65, accounts[1], {from: accounts[1], value: 0}),
             "You are not a verified seller"
         );
     });
@@ -66,14 +66,14 @@ contract("Platform", function (accounts) {
     it("Insufficient deposits to list event", async () => {
         await truffleAssert.reverts(
             platformInstance.listEvent(
-                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: 0}),
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 65, accounts[1], {from: accounts[1], value: 0}),
             "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event."
         );
     });
 
     it("Event listed successfully", async () => {
         await platformInstance.listEvent(
-            "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
+            "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
         latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         var eventTitle = await eventInstance.getEventTitle(latestEventId);
         await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
@@ -81,7 +81,7 @@ contract("Platform", function (accounts) {
 
     it("List Event", async () => {
         await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
-        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 0", title, "Failed to create event");
@@ -136,7 +136,7 @@ contract("Platform", function (accounts) {
 
     it("Test Priority System", async () => {
         // Listing of event with 5 tickets
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 1", title, "Failed to create event");

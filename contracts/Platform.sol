@@ -62,7 +62,7 @@ contract Platform {
         // however msg.value here will not be sent to event contract. msg.value at event contract is 0.
         require(msg.value >= calMinimumDeposit(capacity,priceOfTicket) * 1 wei, "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event.");
 
-        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day, hour, minute, second, capacity, seller);
+        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day, hour, minute, second, capacity, priceOfTicket, seller);
         sellerDepositedValue[msg.sender] = msg.value;
         return newEventId;
     }
