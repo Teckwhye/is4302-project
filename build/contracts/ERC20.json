@@ -16943,7 +16943,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.11",
-  "updatedAt": "2023-04-03T16:54:02.023Z",
+  "updatedAt": "2023-04-04T02:32:39.443Z",
   "devdoc": {
     "methods": {
       "allowance(address,address)": {
