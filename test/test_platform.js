@@ -205,34 +205,38 @@ contract("Platform", function (accounts) {
         await truffleAssert.reverts(platformInstance.endEvent(latestEventId, {from: accounts[8]}),"Only original seller can end event")
     });
 
-    // it("Seller deposits and 95% of ticket sales, successfully transferred to seller when event ends", async () => {
-    //     let beforeListAmt = await accountInstance.getBalance(accounts[1]);
-    //     console.log("beforelist :" + beforeListAmt);
+    it("Seller deposits and 95% of ticket sales, successfully transferred to seller when event ends", async () => {
+        await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        await platformInstance.buyTickets(latestEventId, 4, {from: accounts[3], value: oneEth.dividedBy(4)});
 
-    //     await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
-    //     let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        // Find initialSellerBalance before performing endEvent function
+        let initialSellerBalance = new BigNumber(await web3.eth.getBalance(accounts[1]));
 
-    //     await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
-    //     await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-    //     await platformInstance.buyTickets(latestEventId, 4, {from: accounts[3], value: oneEth.dividedBy(4)});
-    //     await platformInstance.endEvent(latestEventId, {from: accounts[1]});
+        // Find gasFees for performing endEvent function
+        let end = await platformInstance.endEvent(latestEventId, {from: accounts[1]});
+        let gasUsed = new BigNumber(end.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(end.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+        let gasFees = gasPrice.multipliedBy(gasUsed);
 
-    //     let sellerFinalAmt = new BigNumber(await accountInstance.getBalance(accounts[1]));
-    //     console.log("sellerFinalAmt :" + sellerFinalAmt);
-    //     console.log("comms :" + new BigNumber(95 * 4 * 65 / 100));
+        let finalSellerBalance = new BigNumber(await web3.eth.getBalance(accounts[1]));
 
-    //     let sellerFinalAmt2 = beforeListAmt.plus(new BigNumber(95 * 4 * 65 / 100));
+        // Seller takes 95% of ticket sales
+        let sellerTicketSales = new BigNumber(95 * 4 * 65 / 100);
 
-    //     console.log("finalamt2: " + sellerFinalAmt2);
+        // sellerBalanceBeforeEndEvent + sellerTicketSales + depositedEth - gasFeesForEndEvent = finalSellerBalance
+        initialSellerBalance = initialSellerBalance.plus(sellerTicketSales).plus(oneEth).minus(gasFees);
         
-    //     await assert(
-    //         sellerFinalAmt.isEqualTo(sellerFinalAmt2),
-    //         "Seller did not received right amount of Eth when event ended."
-    //     )
-    // });
+        await assert(
+            finalSellerBalance.isEqualTo(initialSellerBalance),
+            "Seller did not received right amount of Eth when event ended."
+        )
+    });
 
     it("Platform keeps 5% commission of ticket sales when event ends", async () => {
-
         let platformAddr = await platformInstance.getPlatformAddr();
         //console.log("finalamt: " + platformAddr);
         let platformOriginalEth = new BigNumber(await accountInstance.getBalance(platformAddr));
