@@ -204,5 +204,8 @@ contract Platform {
         return (capacity * priceOfTicket)/2 * 50000;
     }
 
+    function getPlatformAddr() public view returns(address) {
+        return address(this);
+    }
 
 }
