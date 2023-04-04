@@ -16,7 +16,7 @@ contract Account {
     struct account {
         status state; // whether an account can sell tickets
         address verifier; // who verified this account
-        bool certified; // whether account can certify other addresses
+        bool certified; // whether an account is certified to verify other address
     }
 
     mapping (address => account) accounts;
