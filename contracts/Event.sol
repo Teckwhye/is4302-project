@@ -134,6 +134,10 @@ contract Event {
         events[eventId].firstTicketId = ticketId;
     }
 
+    function setEventTicketsLeft(uint256 eventId, uint256 ticketsLeft) public validEventId(eventId) {
+        events[eventId].ticketsLeft = ticketsLeft;
+    }
+
     function getLatestEventId() public view returns (uint256) {
         return numEvents - 1;
     }

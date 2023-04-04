@@ -195,4 +195,139 @@ contract("Platform", function (accounts) {
         assert.strictEqual(owner5, accounts[3]);
     });
 
+    it("Test Updating of Bid", async () => {
+        // Listing of event with 1 ticket
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        const title = await eventInstance.getEventTitle(latestEventId);
+        await assert("Title 1", title, "Failed to create event");
+
+        // Commence bidding
+        let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
+        
+        // Generate token for accounts[2],[3] with 5,6 correspondingly
+        await eventTokenInstance.getTokenForTesting(accounts[2], 5, {from: accounts[0]});
+        await eventTokenInstance.getTokenForTesting(accounts[3], 6, {from: accounts[0]});
+        const acc2token = new BigNumber(await eventTokenInstance.checkEventToken({from: accounts[2]}));
+        await assert(acc2token.isEqualTo(BigNumber(5)), "EventToken not minted");
+        const acc3token = new BigNumber(await eventTokenInstance.checkEventToken({from: accounts[3]}));
+        await assert(acc3token.isEqualTo(BigNumber(6)), "EventToken not minted");
+
+        // accounts[3] place bid for 1 ticket with 0 tokens each
+        let bidPlaced1 = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[3], value: oneEth});
+        truffleAssert.eventEmitted(bidPlaced1, "BidPlaced");
+
+        // accounts[2] approve Platform contract to use 5 tokens and place bid for 1 ticket with 5 tokens each
+        await eventTokenInstance.approveToken(platformInstance.address, 5, {from: accounts[2]}); 
+        let acc2allowance = new BigNumber(await eventTokenInstance.checkAllowance(accounts[2], platformInstance.address, {from: accounts[2]}));
+        await assert(acc2allowance.isEqualTo(BigNumber(5)), "EventToken not approved");
+        let bidPlaced2 = await platformInstance.placeBid(latestEventId, 1, 5, {from: accounts[2], value: oneEth});
+        truffleAssert.eventEmitted(bidPlaced2, "BidPlaced");
+
+        // accounts[3] approve Platform contract to use 6 tokens and update bid for 1 ticket with 6 tokens each
+        await eventTokenInstance.approveToken(platformInstance.address, 6, {from: accounts[3]}); 
+        let acc3allowance = new BigNumber(await eventTokenInstance.checkAllowance(accounts[3], platformInstance.address, {from: accounts[3]}));
+        await assert(acc3allowance.isEqualTo(BigNumber(6)), "EventToken not approved");
+        let updateBid1 = await platformInstance.updateBid(latestEventId, 6, {from: accounts[3]});
+        truffleAssert.eventEmitted(updateBid1, "BidUpdate");
+
+        // Ensure that platform EventToken amount is consistent
+        const acc0token = new BigNumber(await eventTokenInstance.checkEventTokenOf(Platform.address, {from: accounts[0]}));
+        await assert(acc0token.isEqualTo(BigNumber(22)), "EventToken not transfered to Platform");
+   
+        // Close bid
+        let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+
+        // Ensure accurate ticket distribution
+        let owner1 = await ticketInstance.getTicketOwner(15); // ticketId 15 belongs to accounts[3]
+        assert.strictEqual(owner1, accounts[3]);
+    });
+
+    it("Test Unsuccessful Bid Return ETH", async () => {
+        // Listing of event with 1 ticket
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        const title = await eventInstance.getEventTitle(latestEventId);
+        await assert("Title 1", title, "Failed to create event");
+
+        // Commence bidding
+        let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
+
+        // accounts[2] place bid for 1 ticket with 0 tokens each
+        let bidPlaced1 = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth});
+        truffleAssert.eventEmitted(bidPlaced1, "BidPlaced");
+
+        // accounts[3] place bid for 1 ticket with 0 tokens each
+        let initialbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
+        let bidPlaced2 = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[3], value: oneEth});
+        let gasUsed = new BigNumber(bidPlaced2.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(bidPlaced2.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+        truffleAssert.eventEmitted(bidPlaced2, "BidPlaced");
+   
+        // Close bid
+        let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+
+        // Ensure accurate ticket distribution
+        let owner1 = await ticketInstance.getTicketOwner(16); // ticketId 16 belongs to accounts[2]
+        assert.strictEqual(owner1, accounts[2]);
+
+        // Ensure ETH is returned to unsuccessful bidder accounts[3]
+        let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
+        await assert(finalbalance.isEqualTo(initialbalance.minus(gasPrice.multipliedBy(gasUsed))), "Did not return ETH back to unsuccessful bidders");
+
+    });
+
+    it("Test Successful Bid -> Refund Ticket -> Buy Ticket", async () => {
+        // Listing of event with 1 ticket
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        const title = await eventInstance.getEventTitle(latestEventId);
+        await assert("Title 1", title, "Failed to create event");
+
+        // Commence bidding
+        let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
+
+        // accounts[2] place bid for 1 ticket with 0 tokens each
+        let bidPlaced1 = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth});
+        truffleAssert.eventEmitted(bidPlaced1, "BidPlaced");
+   
+        // Close bid
+        let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+
+        // Ensure accurate ticket distribution
+        let owner1 = await ticketInstance.getTicketOwner(17); // ticketId 17 belongs to accounts[2]
+        assert.strictEqual(owner1, accounts[2]);
+
+        // accounts[2] transfer ticket to platform then refund ticket
+        await ticketInstance.transferTicket(17, platformInstance.address, {from: accounts[2]});
+
+        let initialbalance = new BigNumber(await web3.eth.getBalance(accounts[2]));
+        let refundTicket1 = await platformInstance.refundTicket(17, {from: accounts[2]});
+        truffleAssert.eventEmitted(refundTicket1, "RefundTicket");
+        let gasUsed = new BigNumber(refundTicket1.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(refundTicket1.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+
+        // Ensure ETH is refunded to refunder accounts[2] at half price
+        let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[2]));
+        let halfPriceOfTicket = new BigNumber(await eventInstance.getEventTicketPrice(latestEventId)).dividedBy(2);
+        // Initial - GasFees + Refund = Final ====> Initial - GasFees = Final - Refund
+        await assert((finalbalance.minus(halfPriceOfTicket)).isEqualTo((initialbalance.minus(gasPrice.multipliedBy(gasUsed)))), "Did not return ETH back to refunder");
+
+        // accounts[3] buy ticket
+        let buyTicket1 = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth});
+        truffleAssert.eventEmitted(buyTicket1, "TransferToBuyerSuccessful");
+
+        // Ensure accurate ticket distribution
+        let owner2 = await ticketInstance.getTicketOwner(17); // ticketId 17 belongs to accounts[3]
+        assert.strictEqual(owner2, accounts[3]);
+    });
+
 })

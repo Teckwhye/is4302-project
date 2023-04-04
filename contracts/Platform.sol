@@ -14,6 +14,8 @@ contract Platform {
     event BidCommenced (uint256 eventId);
     event BidPlaced (uint256 eventId, address buyer, uint256 tokenBid);
     event BidBuy (uint256 eventId);
+    event BidUpdate (uint256 eventId, address buyer, uint256 tokenBid);
+    event RefundTicket (uint256 ticketId, address refunder);
     event TransferToBuyerSuccessful(address to, uint256 amount);
 
     mapping(address => uint256) sellerDepositedValue;
@@ -112,6 +114,45 @@ contract Platform {
         emit BidPlaced(eventId, msg.sender, tokenBid);
     }
 
+    // Update bid
+    function updateBid(uint256 eventId, uint256 tokenBid) public isBuyer() {
+        bidInfo memory currentBidInfo = addressBiddings[msg.sender][eventId];
+        require(currentBidInfo.quantity != 0, "Cant update bid without placing bid first");
+        require(tokenBid > currentBidInfo.tokenPerTicket, "New token bid must be higher than current bid");
+
+        uint256 tokenDifference = tokenBid - currentBidInfo.tokenPerTicket;
+        uint256 totalTokenDifference = tokenDifference * currentBidInfo.quantity;
+        require(eventTokenContract.checkAllowance(msg.sender, address(this)) >= totalTokenDifference, "Buyer has not approved sufficient EventTokens");
+        eventTokenContract.approvedTransferFrom(msg.sender, address(this), address(this), totalTokenDifference);
+
+        // Delete old bid
+        for (uint256 i = currentBidInfo.firstIndexForEventBiddings; i < currentBidInfo.firstIndexForEventBiddings + currentBidInfo.quantity; i++) {
+            delete eventBiddings[eventId][currentBidInfo.tokenPerTicket][i];
+        }
+
+        // Add new bid into eventBiddings
+        uint256 firstIdx;
+        for (uint8 i = 0; i < currentBidInfo.quantity; i++) {
+            eventBiddings[eventId][tokenBid].push(msg.sender);
+            if (i == 0) {
+                firstIdx = eventBiddings[eventId][tokenBid].length - 1;
+            }
+        }
+
+        // Update bidInfo
+        currentBidInfo.tokenPerTicket = tokenBid;
+        currentBidInfo.firstIndexForEventBiddings = firstIdx;
+        addressBiddings[msg.sender][eventId] = currentBidInfo;
+
+        // Update top bid
+        if (tokenBid > eventTopBid[eventId]) {
+            eventTopBid[eventId] = tokenBid;
+        }
+
+        emit BidUpdate(eventId, msg.sender, tokenBid);
+    }
+
+
     // Close bidding and transfer tickets to top bidders
     function closeBidding(uint256 eventId) public {
         require(msg.sender == eventContract.getEventSeller(eventId), "Only seller can close bidding");
@@ -122,35 +163,54 @@ contract Platform {
         uint256 ticketId = eventContract.getEventFirstTicketId(eventId);
 
         // Tickets given out starting from top bidders
-        while (ticketsLeft != 0) {
+        while (true) {
             address[] memory bidderList = eventBiddings[eventId][bidAmount];
             for (uint256 i = 0; i < bidderList.length; i++) {
                 if (bidderList[i] == address(0)) continue; 
 
-                ticketContract.transferTicket(ticketId, bidderList[i]); 
-                ticketId++;
-                ticketsLeft--;
-                //burnToken()
-                if (ticketsLeft == 0) break;
+                if (ticketsLeft != 0) {
+                    ticketContract.transferTicket(ticketId, bidderList[i]); 
+                    ticketId++;
+                    ticketsLeft--;
+                    //burnToken()
+                } else { 
+                    // return ETH back to unsuccessful bidders when ticketsLeft == 0 
+                    address payable recipient = address(uint168(bidderList[i]));
+                    recipient.transfer(eventContract.getEventTicketPrice(eventId));
+                }
             }
             if (bidAmount == 0) break;
             bidAmount--;
         }
+        
+        // Update event tickets left
+        eventContract.setEventTicketsLeft(eventId, ticketsLeft);
 
-        // TODO: Return unsuccessful bidders
-        // returnBiddings()
+        // Change state to allow normal buying
         eventContract.setEventBidState(eventId, Event.bidState.buy);
         emit BidBuy(eventId);
     }   
 
-    // Return unsuccessful bidders their corresponding ETH and tokens
-    function returnBiddings() public {
-
-    }
-
     /* Viewing the number of tickets left for an event */
     function viewTicketsLeft(uint256 eventId) public view returns (uint256) {
         return eventContract.getEventTicketsLeft(eventId);
+    }
+
+    /* Ticket owners refund ticket */
+    function refundTicket(uint256 ticketId) public payable isBuyer() {
+        //Ensure ticket has been transfered to platform
+        require(ticketContract.getTicketPrevOwner(ticketId) == msg.sender, "Not owner of ticket");
+        require(ticketContract.getTicketOwner(ticketId) == address(this), "Ticket not transfered to platform yet");
+
+        // Update tickets left
+        uint256 eventId = ticketContract.getTicketEvent(ticketId);
+        eventContract.setEventTicketsLeft(eventId, eventContract.getEventTicketsLeft(eventId) + 1);
+        
+        // ETH transfer back to buyer at 1/2 price
+        uint256 refundPrice = eventContract.getEventTicketPrice(eventId) / 2;
+        msg.sender.transfer(refundPrice);
+
+        emit RefundTicket(ticketId, msg.sender);
     }
 
     /* Buyers buying tickets for an event */
