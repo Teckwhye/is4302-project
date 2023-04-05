@@ -9,8 +9,7 @@ contract EventToken {
     uint256 basePriceOfToken;
     uint256 numberOfUsers;
     mapping (address => bool) UsersWithTokens;
-    mapping(address => bool) allowedRecipient; // mapping of addresses that is able to recieve transfer of tokens from users
-    mapping(address => bool) authorisedAddress; // mapping od addresses authorised to use certain functions
+    mapping(address => bool) authorisedAddress; // mapping of addresses authorised to use certain functions
     address owner;
 
     event NewAllowedAddress(address _recipient);
@@ -24,7 +23,6 @@ contract EventToken {
         owner = msg.sender;
         currentSupply = 0;
         basePriceOfToken = 50000;
-        allowedRecipient[owner] = true;
         authorisedAddress[owner] = true;
         numberOfUsers = 0;
     }
@@ -34,25 +32,9 @@ contract EventToken {
         _;
     }
 
-    modifier onlyAllowedRecipient(address _recipent) {
-        require(allowedRecipient[_recipent], "This recipient is not part of allowed addresses to recieve token transfer");
-        _;
-    }
-
     modifier onlyAuthorisedAddress() {
-        require(authorisedAddress[msg.sender], "You do not have permission to do this");
+        require(authorisedAddress[msg.sender] == true, "You do not have permission to do this");
         _;
-    }
-
-    /**
-     * Add address to be allowed recipient of transfer of tokens
-     *
-     * param address to add
-     * 
-     */
-    function addAllowedRecipient(address _recipient) public onlyOwner {
-        allowedRecipient[_recipient] = true;
-        emit NewAllowedAddress(_recipient);
     }
 
     /**
@@ -98,16 +80,6 @@ contract EventToken {
     }
 
     /**
-     * Transfer token from one address to another (Only allowed recipients are able to recieve tokens)
-     *
-     * param amount of tokens to bid
-     * 
-     */
-    function transferFrom(address _from, address _to, uint256 _value) public onlyOwner {
-        erc20Contract.transferFrom(_from, _to, _value);
-    }
-
-    /**
      * Approve token to be spendable by spender
      *
      * param address of spender
@@ -127,7 +99,7 @@ contract EventToken {
      * param value of token to transfer
      * 
      */
-    function approvedTransferFrom(address _from, address _caller, address _to, uint256 _value) public {
+    function approvedTransferFrom(address _from, address _caller, address _to, uint256 _value) public onlyAuthorisedAddress {
         erc20Contract.approvedTransferFrom(_from, _caller, _to, _value);
     }
 
@@ -170,6 +142,11 @@ contract EventToken {
     // get base price of tokens
     function getBasePriceOfToken() public view returns (uint256) {
         return basePriceOfToken;
+    }
+
+    // check if address is authoried
+    function checkAuthorisedAddress(address addr) public view returns (bool) {
+        return authorisedAddress[addr];
     }
 
 }

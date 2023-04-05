@@ -3,6 +3,7 @@ const Ticket = artifacts.require("Ticket");
 const EventToken = artifacts.require("EventToken");
 const Account = artifacts.require("Account");
 const Platform = artifacts.require("Platform");
+const EventTokenMarket = artifacts.require("EventTokenMarket");
 
 module.exports = (deployer, network, account) => {
     deployer.deploy(EventToken)
@@ -16,5 +17,8 @@ module.exports = (deployer, network, account) => {
     })
     .then(function () {
         return deployer.deploy(Platform, Account.address, EventToken.address, Event.address, Ticket.address)
+    })
+    .then(function (){
+        return deployer.deploy(EventTokenMarket, EventToken.address, 10);
     });
 };
