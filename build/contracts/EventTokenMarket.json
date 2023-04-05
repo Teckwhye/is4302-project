@@ -777,7 +777,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5093,
+                            "referencedDeclaration": 5387,
                             "src": "865:3:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -853,10 +853,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        5096,
-                        5097
+                        5390,
+                        5391
                       ],
-                      "referencedDeclaration": 5097,
+                      "referencedDeclaration": 5391,
                       "src": "857:7:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -988,7 +988,7 @@
                               "name": "this",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 5123,
+                              "referencedDeclaration": 5417,
                               "src": "1153:4:5",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_contract$_EventTokenMarket_$3596",
@@ -1260,10 +1260,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        5096,
-                        5097
+                        5390,
+                        5391
                       ],
-                      "referencedDeclaration": 5097,
+                      "referencedDeclaration": 5391,
                       "src": "1239:7:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1416,7 +1416,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5093,
+                        "referencedDeclaration": 5387,
                         "src": "1454:3:5",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -1802,7 +1802,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 5093,
+                                "referencedDeclaration": 5387,
                                 "src": "2082:3:5",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -1927,10 +1927,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        5096,
-                        5097
+                        5390,
+                        5391
                       ],
-                      "referencedDeclaration": 5097,
+                      "referencedDeclaration": 5391,
                       "src": "2037:7:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1967,7 +1967,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5093,
+                          "referencedDeclaration": 5387,
                           "src": "2194:3:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -1997,7 +1997,7 @@
                             "name": "this",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5123,
+                            "referencedDeclaration": 5417,
                             "src": "2214:4:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_contract$_EventTokenMarket_$3596",
@@ -2157,7 +2157,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5093,
+                          "referencedDeclaration": 5387,
                           "src": "2298:3:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2296,7 +2296,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5093,
+                            "referencedDeclaration": 5387,
                             "src": "2348:3:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -2385,7 +2385,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5093,
+                          "referencedDeclaration": 5387,
                           "src": "2419:3:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2539,7 +2539,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 5093,
+                              "referencedDeclaration": 5387,
                               "src": "2665:3:5",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -2660,10 +2660,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        5096,
-                        5097
+                        5390,
+                        5391
                       ],
-                      "referencedDeclaration": 5097,
+                      "referencedDeclaration": 5391,
                       "src": "2615:7:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2802,7 +2802,7 @@
                             "name": "this",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5123,
+                            "referencedDeclaration": 5417,
                             "src": "2854:4:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_contract$_EventTokenMarket_$3596",
@@ -2852,7 +2852,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5093,
+                          "referencedDeclaration": 5387,
                           "src": "2861:3:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2959,7 +2959,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5093,
+                          "referencedDeclaration": 5387,
                           "src": "2919:3:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -3391,10 +3391,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        5096,
-                        5097
+                        5390,
+                        5391
                       ],
-                      "referencedDeclaration": 5097,
+                      "referencedDeclaration": 5391,
                       "src": "3294:7:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3621,7 +3621,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5093,
+                            "referencedDeclaration": 5387,
                             "src": "3534:3:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -3697,10 +3697,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        5096,
-                        5097
+                        5390,
+                        5391
                       ],
-                      "referencedDeclaration": 5097,
+                      "referencedDeclaration": 5391,
                       "src": "3526:7:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3748,7 +3748,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5093,
+                            "referencedDeclaration": 5387,
                             "src": "3638:3:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -3806,7 +3806,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5093,
+                          "referencedDeclaration": 5387,
                           "src": "3618:3:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -4938,7 +4938,7 @@
                             "name": "this",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5123,
+                            "referencedDeclaration": 5417,
                             "src": "4487:4:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_contract$_EventTokenMarket_$3596",
@@ -4988,7 +4988,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5093,
+                          "referencedDeclaration": 5387,
                           "src": "4494:3:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -5095,7 +5095,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5093,
+                          "referencedDeclaration": 5387,
                           "src": "4537:3:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -5789,7 +5789,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5093,
+                        "referencedDeclaration": 5387,
                         "src": "5031:3:5",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -6565,10 +6565,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                5096,
-                                5097
+                                5390,
+                                5391
                               ],
-                              "referencedDeclaration": 5097,
+                              "referencedDeclaration": 5391,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -6609,7 +6609,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 5093,
+                                      "referencedDeclaration": 5387,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -6941,7 +6941,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 5123,
+                                      "referencedDeclaration": 5417,
                                       "type": "contract EventTokenMarket",
                                       "value": "this"
                                     },
@@ -7013,10 +7013,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                5096,
-                                5097
+                                5390,
+                                5391
                               ],
-                              "referencedDeclaration": 5097,
+                              "referencedDeclaration": 5391,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -7323,7 +7323,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -7705,10 +7705,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                5096,
-                                5097
+                                5390,
+                                5391
                               ],
-                              "referencedDeclaration": 5097,
+                              "referencedDeclaration": 5391,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -7800,7 +7800,7 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 5093,
+                                          "referencedDeclaration": 5387,
                                           "type": "msg",
                                           "value": "msg"
                                         },
@@ -7943,7 +7943,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -7996,7 +7996,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5123,
+                                  "referencedDeclaration": 5417,
                                   "type": "contract EventTokenMarket",
                                   "value": "this"
                                 },
@@ -8139,7 +8139,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -8252,7 +8252,7 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 5093,
+                                          "referencedDeclaration": 5387,
                                           "type": "msg",
                                           "value": "msg"
                                         },
@@ -8375,7 +8375,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -8514,10 +8514,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                5096,
-                                5097
+                                5390,
+                                5391
                               ],
-                              "referencedDeclaration": 5097,
+                              "referencedDeclaration": 5391,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -8598,7 +8598,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 5093,
+                                      "referencedDeclaration": 5387,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -8866,7 +8866,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5123,
+                                  "referencedDeclaration": 5417,
                                   "type": "contract EventTokenMarket",
                                   "value": "this"
                                 },
@@ -8897,7 +8897,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -8992,7 +8992,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -9350,10 +9350,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                5096,
-                                5097
+                                5390,
+                                5391
                               ],
-                              "referencedDeclaration": 5097,
+                              "referencedDeclaration": 5391,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -9655,10 +9655,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                5096,
-                                5097
+                                5390,
+                                5391
                               ],
-                              "referencedDeclaration": 5097,
+                              "referencedDeclaration": 5391,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -9699,7 +9699,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 5093,
+                                      "referencedDeclaration": 5387,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -9810,7 +9810,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 5093,
+                                      "referencedDeclaration": 5387,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -9861,7 +9861,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 5093,
+                                      "referencedDeclaration": 5387,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -11133,7 +11133,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5123,
+                                  "referencedDeclaration": 5417,
                                   "type": "contract EventTokenMarket",
                                   "value": "this"
                                 },
@@ -11164,7 +11164,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -11263,7 +11263,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -12010,7 +12010,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 5093,
+                                  "referencedDeclaration": 5387,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -12156,7 +12156,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.11",
-  "updatedAt": "2023-04-04T10:19:22.231Z",
+  "updatedAt": "2023-04-05T14:51:45.651Z",
   "devdoc": {
     "methods": {}
   },

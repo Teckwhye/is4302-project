@@ -197,7 +197,7 @@ contract("Platform", function (accounts) {
 
     it("Test Updating of Bid", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 1", title, "Failed to create event");
@@ -247,7 +247,7 @@ contract("Platform", function (accounts) {
 
     it("Test Unsuccessful Bid Return ETH", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 1", title, "Failed to create event");
@@ -284,7 +284,7 @@ contract("Platform", function (accounts) {
 
     it("Test Successful Bid -> Refund Ticket -> Buy Ticket", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 1", title, "Failed to create event");
