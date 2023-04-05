@@ -253,8 +253,6 @@ contract Event {
         return numEvents - 1;
     }
 
-    function setEventTicketsLeft(uint256 eventId, uint256 ticketsLeft) public validEventId(eventId) {
-        events[eventId].ticketsLeft = ticketsLeft;
-    }
+   
 }
 
