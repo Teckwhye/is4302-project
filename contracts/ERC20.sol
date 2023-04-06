@@ -138,11 +138,11 @@ contract ERC20 {
   function approvedTransferFrom(address _from, address _caller, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
     require(_value <= balances[_from]);
-    require(_value <= allowed[_from][_caller]);
+    //require(_value <= allowed[_from][_caller]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
-    allowed[_from][_caller] = allowed[_from][_caller].sub(_value);
+    //allowed[_from][_caller] = allowed[_from][_caller].sub(_value);
     emit Transfer(_from, _to, _value);
     return true;
   }
