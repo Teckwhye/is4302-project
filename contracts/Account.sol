@@ -16,7 +16,7 @@ contract Account {
     struct account {
         status state; // whether an account can sell tickets
         address verifier; // who verified this account
-        bool certified; // whether account can certify other addresses
+        bool certified; // whether an account is certified to verify other address
     }
 
     mapping (address => account) accounts;
@@ -115,6 +115,16 @@ contract Account {
      */
     function getVerifiedStatus() public pure returns (status state) {
         return status.verified;
+    }
+
+     /**
+     * Return ether balance of specific Account/ Contract Address
+     *
+     * param addr       address of the account/ contract
+     * returns uint256  ether balance of the account/ contract
+     */
+    function getBalance(address addr) public view returns (uint256) {
+        return addr.balance;
     }
 
 }

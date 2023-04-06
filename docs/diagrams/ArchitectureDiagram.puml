@@ -1,26 +1,59 @@
 @startuml ArchitectureDiagram
-!include <office/Users/user>
-!include style.puml
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
 
-' hide the circles in the diagram
-hide circle
-hide empty members
+left to right direction
+"Organiser"  as Organiser #79dbf0
+"Certifier" as Certifier #9fd22a
+"Buyer" as Buyer #45818e
+"Account.sol" as Account #d5554c
 
-package " "<<Rectangle>>{
-    class Platform COLOR_PLATFORM
-    class Account COLOR_ACCOUNT
-    class Ticket COLOR_TICKET
-    class Event COLOR_EVENT
-    class EventToken COLOR_EVENTTOKEN
-    class ERC20 COLOR_ERC20
+Buyer --> EventTokenMarket.sol
+rectangle Platform.sol #a561cc {
+  Organiser --> (listEvent)
+  (listEvent) --> (commenceBidding)
+  (commenceBidding) --> (bid)
+  (bid) --> (closeBidding)
+  (closeBidding) --> (buyTickets)
+  (buyTickets) --> (endEvent)
+  Buyer <--> (buyTickets)
+  Buyer -right-> (bid)
 }
 
-class "<$user>" as User COLOR_SPARE3
+rectangle Event.sol #ff7373 {
+  (listEvent) --> (createEvent)
+  (createEvent) --> (generateEventTickets)
+}
 
-User .[COLOR_SPARE3]down.> Platform
-Platform -[COLOR_PLATFORM]down> Account
-Account --[COLOR_ACCOUNT]up> Platform
-Platform .[COLOR_PLATFORM].> User
+rectangle Ticket.sol #faebd7 {
+  (generateEventTickets) --> (addTicket)
+}
 
+rectangle Account.sol #c0d6e4 {
+   Certifier --> (verifyAccount)
+  (listEvent) <--> (isVerified)
+  Account --> (certifyAccount)
+}
+
+EventTokenMarket.sol <-up-> EventTokenMarketAlgorithm.sol
+EventTokenMarket.sol -up-> ERC20.sol
+
+rectangle EventTokenMarket.sol #b4eeb4 {
+    (list)
+    (unlist)
+    (purchaseToken)
+}
+
+rectangle EventTokenMarketAlgorithm.sol #a0db8e {
+    (buyTokens)
+    (removeSellOrders)
+}
+
+rectangle ERC20.sol {
+    (mint)
+    (burn)
+    (transferFrom)
+    (approve)
+}
 
 @enduml

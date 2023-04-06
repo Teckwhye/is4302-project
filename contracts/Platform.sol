@@ -74,15 +74,14 @@ contract Platform {
         string memory venue,
         uint256 year, uint256 month, uint256 day, uint256 hour, uint256 minute, uint256 second,
         uint256 capacity,
-        uint256 ticketsLeft,
         uint256 priceOfTicket,
         address seller) public payable isOrganiser() returns (uint256) {
 
         // however msg.value here will not be sent to event contract. msg.value at event contract is 0.
         require(msg.value >= calMinimumDeposit(capacity,priceOfTicket) * 1 wei, "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event.");
 
-        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day, hour, minute, second, capacity, ticketsLeft, priceOfTicket, seller);
-
+        uint256 newEventId = eventContract.createEvent(title, venue, year, month, day, hour, minute, second, capacity, priceOfTicket, seller);
+        sellerDepositedValue[msg.sender] = msg.value;
         return newEventId;
     }
 
@@ -263,6 +262,10 @@ contract Platform {
         uint256 totalPrice = eventContract.getEventTicketPrice(eventId) * quantity;
         require(msg.value >= totalPrice, "Buyer has insufficient ETH to buy tickets");
 
+        // Set remaining tickets after someone buys ticket(s)
+        uint256 remainingTickets = eventContract.getEventTicketsLeft(eventId) - quantity;
+        eventContract.setEventTicketsLeft(eventId,remainingTickets);
+
         // Transfer ticket
         uint256 firstTicketId = eventContract.getEventFirstTicketId(eventId);
         uint256 lastTicketId = firstTicketId + eventContract.getEventCapacity(eventId) - 1;
@@ -290,8 +293,17 @@ contract Platform {
     function endEvent(uint256 eventId) public isOrganiser() {
         address seller = eventContract.getEventSeller(eventId);
         require(seller == msg.sender, "Only original seller can end event");
-        eventContract.endEvent(eventId);
         msg.sender.transfer(sellerDepositedValue[seller]);
+
+        // Calculating ticket sales
+        uint256 numOfTicketsSold = eventContract.getEventCapacity(eventId) - eventContract.getEventTicketsLeft(eventId);
+        uint256 ticketSales = numOfTicketsSold * eventContract.getEventTicketPrice(eventId);
+
+        // Platform keeps 5% commission of ticket sales, rest goes to Seller when event ends
+        uint256 sellerProfits = 95 * ticketSales /100;
+        msg.sender.transfer(sellerProfits);
+
+        eventContract.endEvent(eventId);
     }
 
     /**
@@ -304,4 +316,9 @@ contract Platform {
         // 1USD = 50,000 wei
         return (capacity * priceOfTicket)/2 * 50000;
     }
+
+    function getPlatformAddr() public view returns(address) {
+        return address(this);
+    }
+
 }
