@@ -33,6 +33,13 @@ contract("Platform", function (accounts) {
     var latestEventId;
 
     it("Account(Seller) unable to list event if yet to be verified", async () => {
+        // Add event token authentication
+        truffleAssert.eventEmitted(
+            await eventTokenInstance.addAuthorisedAddress(platformInstance.address), 
+            'NewAuthorisedAddress');
+        assert.equal(await eventTokenInstance.checkAuthorisedAddress(platformInstance.address), true);
+        // end of add
+            
         await truffleAssert.reverts(
             platformInstance.listEvent(
                 "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 65, accounts[1], {from: accounts[1], value: 0}),
