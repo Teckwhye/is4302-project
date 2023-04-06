@@ -67,7 +67,6 @@ contract Event {
         string memory venue,
         uint256 year, uint256 month, uint256 day, uint256 hour, uint256 minute, uint256 second,
         uint256 capacity,
-        uint256 ticketsLeft,
         uint256 priceOfTicket,
         address seller
     ) public returns (uint256) {
@@ -78,7 +77,7 @@ contract Event {
             venue,
             DateTime.timestampFromDateTime(year, month, day, hour, minute, second),
             capacity,
-            ticketsLeft,
+            capacity,
             priceOfTicket,
             seller,
             bidState.close,
@@ -89,7 +88,7 @@ contract Event {
         events[newEventId] = newEvent;
 
         // Generate Tickets
-        uint256 firstTicketId = generateEventTickets(msg.sender, newEventId, priceOfTicket, Ticket.category.standard, ticketsLeft);
+        uint256 firstTicketId = generateEventTickets(msg.sender, newEventId, priceOfTicket, Ticket.category.standard, capacity);
 
         setEventFirstTicketId(newEventId, firstTicketId);
 
@@ -253,5 +252,7 @@ contract Event {
     function getLatestEventId() public view returns (uint256) {
         return numEvents - 1;
     }
+
+   
 }
 
