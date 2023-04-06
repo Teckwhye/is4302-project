@@ -373,7 +373,7 @@ contract("Platform", function (accounts) {
 
     it("Platform keeps 5% commission of ticket sales when event ends", async () => {
         let platformAddr = await platformInstance.getPlatformAddr();
-        //console.log("finalamt: " + platformAddr);
+        
         let platformOriginalEth = new BigNumber(await accountInstance.getBalance(platformAddr));
         await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
 

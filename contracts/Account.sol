@@ -117,8 +117,11 @@ contract Account {
         return status.verified;
     }
 
-    /**
+     /**
      * Return ether balance of specific Account/ Contract Address
+     *
+     * param addr       address of the account/ contract
+     * returns uint256  ether balance of the account/ contract
      */
     function getBalance(address addr) public view returns (uint256) {
         return addr.balance;
