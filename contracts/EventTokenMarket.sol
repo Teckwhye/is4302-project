@@ -50,7 +50,7 @@ contract EventTokenMarket {
      */
    function list(uint256 _quantity) public {
       require(eventTokenContract.checkEventTokenOf(msg.sender) >= _quantity, "You do not have enough event tokens to sell");
-      eventTokenContract.approvedTransferFrom(msg.sender, address(this), address(this), _quantity);
+      eventTokenContract.approvedTransferFrom(msg.sender, address(this), _quantity);
       uint256 sellOrderId = marketAlgorithmContract.addSellOrder(msg.sender, _quantity);
       usersCurrentListing[msg.sender].push(sellOrderId);
       emit SellOrderListed(sellOrderId, msg.sender, _quantity);
@@ -65,7 +65,7 @@ contract EventTokenMarket {
    function unlist(uint256 sellOrderId) public {
       require(marketAlgorithmContract.isSellOrderSeller(msg.sender, sellOrderId), "You did not list this order");
       uint256 amountOfTokens = marketAlgorithmContract.removeSellOrder(sellOrderId);
-      eventTokenContract.approvedTransferFrom(address(this), address(this), msg.sender, amountOfTokens);
+      eventTokenContract.approvedTransferFrom(address(this), msg.sender, amountOfTokens);
       emit SellOrderDelisted(msg.sender, sellOrderId);
    }
 
@@ -105,7 +105,7 @@ contract EventTokenMarket {
          totalComissionFee = totalComissionFee + comissionFee;
       }
 
-      eventTokenContract.approvedTransferFrom(address(this), address(this), msg.sender, quantity);
+      eventTokenContract.approvedTransferFrom(address(this), msg.sender, quantity);
       emit BuyToken(msg.sender, quantity, order[1]);
 
    }
