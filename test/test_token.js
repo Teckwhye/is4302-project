@@ -167,8 +167,18 @@ contract("EventToken", function (accounts) {
         
     });
 
+    // Account 2 cannot delist other people order
+    it("Delist of sell order 1 from account[2] should not work", async () => {
+        
+        truffleAssert.reverts(
+            eventTokenMarketInstance.unlist(1, {from: accounts[2]}),
+            "You did not list this order"
+        );
+    });
+
     // Account 3 delist sell order
     it("Delist of sellOrder from account[3] and account 6 should not be able to purchase token", async () => {
+        
         truffleAssert.eventEmitted(
             await eventTokenMarketInstance.unlist(1, {from: accounts[3]}), 
             'SellOrderDelisted',(ev) => {
