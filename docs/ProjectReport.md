@@ -1,5 +1,8 @@
 # Architecture & Design document
 
+## Link to github code
+
+
 ## Group members:
 
 | Member Name | Admin Number |
@@ -14,9 +17,12 @@
 
 The purpose of this project is to leverage on cutting-edge capabilities of blockchain technology to effectively tackle the problem of scalping in the context of popular events. We aim to utilise the blockchain technology to create a secure, transparent, and decentralized system that helps event organizers, ticketing agencies and consumers to effectively manage the sale and distribution of tickets without unfair competition.
 
-## Motivation
+## Business Model
 
 The current challenges with the ticket sale systems are the existence of scalpers that benefits from the traditional ticketing sale system and the lack of authenticity and accountability of tickets. Even though these challenges are not completely preventable using blockchain, the team still sees the potential benefits of deploying such application of blockchain. For instance, the implementation of priority system to reduce the opportunities for scalpers from benefitting and provide more transparency of information from the verification of organisations to the transaction of tickets. 
+
+### Stakeholder benefits
+
 
 ## Glossary
 
