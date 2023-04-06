@@ -18,6 +18,13 @@ The purpose of this project is to leverage on cutting-edge capabilities of block
 
 The current challenges with the ticket sale systems are the existence of scalpers that benefits from the traditional ticketing sale system and the lack of authenticity and accountability of tickets. Even though these challenges are not completely preventable using blockchain, the team still sees the potential benefits of deploying such application of blockchain. For instance, the implementation of priority system to reduce the opportunities for scalpers from benefitting and provide more transparency of information from the verification of organisations to the transaction of tickets. 
 
+## Glossary
+
+| Name | Explanation |
+| -- | -- |
+| Buyer | User that purchases event tickets on the platform |
+| Organiser | User that lists events on the platform |
+
 ## Contents
 
 * [Architecture](#architecture)
@@ -67,89 +74,36 @@ These information are stored in a mapping where the key is the address and the v
 
 The relevant getter and setter functions for these information are also included.
 
-```
-enum status {
-    unverified,
-    verified
-}
-
-struct account {
-    status state; // whether an account can sell tickets
-    address verifier; // who verified this account
-    bool certified; // whether account is certified to verify other addresses
-}
-
-mapping (address => account) accounts;
-```
-
 This structure ensures ease of obtaining any account information. Moreover, any new account is defaulted with an unverified state, verifier address of 0 and certified set to false. This prevents unverified account to list events or verify other accounts.
 
 #### Account Validation
 
 The team assumes that `Account.sol` is trusted and the accounts certified by `Account.sol` are also trusted.
 
-`Account.sol` has the authoritity to determine whether an account is certified to conduct verification for an account. Only when an account is certified by the `Account.so", the account can verify the authenticity of other accounts.
+`Account.sol` has the authoritity to determine whether an account is certified to conduct verification for an account. Only when an account is certified by `Account.sol`, the account can verify the authenticity of other accounts.
 
 ```
-/**
-* certify an account to be given the permission to verify other accounts
-*
-* param addr       address of the account to be certified
-*/
-function certifyAccount(address addr) public onlyOwner() {
-    require(accounts[addr].certified == false, "Account is already certified");
-    accounts[addr].certified = true;
-}
-
-/**
-* uncertify an account to revoke permission to verify other accounts
-* param addr       address of the account to be uncertified
-*/
-function uncertifyAccount(address addr) public onlyOwner() {
-    require(accounts[addr].certified == true, "Account is not certified");
-    accounts[addr].certified = false;
-}
+AccountContract.certifyAccount(address addr)
+```
+Example (Certifying account[1]):
+```
+AccountContract.certifyAccount(address(account[1]))
 ```
 
 After `Account.sol` certifies a set of accounts to provide them with the responsibility to verify authenticity of accounts, they can verify accounts that allows the requested accounts to be able to list an event. When a certified account conducts checks and is sure that an account is authentic, the certified account's address is stored in the requester's account information because the status of an account is changed. However, the authentication process will be done off-chain.  
 
 ```
-/**
-* Verify an account to be able to list events
-*
-* param addr       address of the account to be verified
-*/
-function verifyAccount(address addr) public isCertified() {
-    accounts[addr].state = status.verified;
-    accounts[addr].verifier = msg.sender;
-}
-
-/**
-* Unverify an account to restrict listing events
-*
-* param addr       address of the account to be unverified
-*/
-function unverifyAccount(address addr) public isCertified() {
-    accounts[addr].state = status.unverified;
-    accounts[addr].verifier = msg.sender;
-}
+AccountContract.verifyAccount(address addr)
+```
+Example (Verifying account[2]):
+```
+AccountContract.verifyAccount(address(account[2]))
 ```
 
 An example scenario of the validation process will be as follows:
 1. `Account.sol` certifies *account[1]* that can verify other accounts. The trusted accounts will be the oracle.
-2. *account[3]* wants to list an event on the platform and has requested to be verified. *account[1]* can now conduct background checks on the authenticity of *acccount[3]*. This process will be done off-chain
-3. Upon successful verification, *account[1]* verifies *account[3]* and now *account[3]* can list on the platform.
-
-*account[1]*'s information will change from
-|Variable| Before| After|
-|--|--|--|
-|certified| false | true| 
-
-*account[3]*'s information will change from
-|Variable| Before| After|
-|--|--|--|
-|state| unverified| verified|
-|verifier| address(0) | address(account[1])|
+2. *account[2]* wants to list an event on the platform and has requested to be verified. *account[1]* can now conduct background checks on the authenticity of *acccount[2]*. This process will be done off-chain
+3. Upon successful verification, *account[1]* verifies *account[2]* and now *account[2]* can list on the platform.
 
 The team understand that this solution is not a full-proof solution to the oracle problem. This is due to `Account.sol` being a single point of failure and an account is also certified by only one certifier without any cross-checking.
 
