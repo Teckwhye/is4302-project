@@ -106,12 +106,12 @@ contract("Platform", function (accounts) {
 
     it("Close Bidding", async () => {
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
     });
 
     it("Buy Ticket", async () => {
         let buyTicket = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth.dividedBy(4)});
-        truffleAssert.eventEmitted(buyTicket, "TransferToBuyerSuccessful");
+        truffleAssert.eventEmitted(buyTicket, "BuyTicket");
     });
 
     it("Insufficent funds to buy tickets", async () => {
@@ -138,7 +138,7 @@ contract("Platform", function (accounts) {
 
         // not the best way
         let buyTicketProcess = await platformInstance.buyTickets(latestEventId, 3, {from: accounts[3], value: oneEth.dividedBy(4)})
-        truffleAssert.eventEmitted(buyTicketProcess, 'TransferToBuyerSuccessful');
+        truffleAssert.eventEmitted(buyTicketProcess, 'BuyTicket');
     });
 
     it("Test Priority System", async () => {
@@ -187,7 +187,7 @@ contract("Platform", function (accounts) {
    
         // Close bid
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Ensure accurate ticket distribution
         let owner1 = await ticketInstance.getTicketOwner(10); // ticketId 10 belongs to accounts[2]
@@ -245,7 +245,7 @@ contract("Platform", function (accounts) {
    
         // Close bid
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Ensure accurate ticket distribution
         let owner1 = await ticketInstance.getTicketOwner(15); // ticketId 15 belongs to accounts[3]
@@ -277,7 +277,7 @@ contract("Platform", function (accounts) {
    
         // Close bid
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Ensure accurate ticket distribution
         let owner1 = await ticketInstance.getTicketOwner(16); // ticketId 16 belongs to accounts[2]
@@ -306,7 +306,7 @@ contract("Platform", function (accounts) {
    
         // Close bid
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Ensure accurate ticket distribution
         let owner1 = await ticketInstance.getTicketOwner(17); // ticketId 17 belongs to accounts[2]
@@ -330,7 +330,7 @@ contract("Platform", function (accounts) {
 
         // accounts[3] buy ticket
         let buyTicket1 = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth});
-        truffleAssert.eventEmitted(buyTicket1, "TransferToBuyerSuccessful");
+        truffleAssert.eventEmitted(buyTicket1, "BuyTicket");
 
         // Ensure accurate ticket distribution
         let owner2 = await ticketInstance.getTicketOwner(17); // ticketId 17 belongs to accounts[3]

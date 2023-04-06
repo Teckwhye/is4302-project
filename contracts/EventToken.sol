@@ -94,13 +94,12 @@ contract EventToken {
      * Transfer token from address to address
      *
      * param address of owner to transfer from
-     * param address of caller which is approved with allowance to transfer
-     * param address of approved spender 
+     * param address to transfer to 
      * param value of token to transfer
      * 
      */
-    function approvedTransferFrom(address _from, address _caller, address _to, uint256 _value) public onlyAuthorisedAddress {
-        erc20Contract.approvedTransferFrom(_from, _caller, _to, _value);
+    function approvedTransferFrom(address _from, address _to, uint256 _value) public onlyAuthorisedAddress {
+        erc20Contract.approvedTransferFrom(_from, _to, _value);
     }
 
     /**

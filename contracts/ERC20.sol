@@ -131,18 +131,17 @@ contract ERC20 {
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
-   * @param _caller address The address which is calling this function
    * @param _to address The address which you want to transfer to
    * @param _value uint256 the amount of tokens to be transferred
    */
-  function approvedTransferFrom(address _from, address _caller, address _to, uint256 _value) public returns (bool) {
+  function approvedTransferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
     require(_value <= balances[_from]);
-    //require(_value <= allowed[_from][_caller]);
+    //require(_value <= allowed[_from][tx.origin]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
-    //allowed[_from][_caller] = allowed[_from][_caller].sub(_value);
+    //allowed[_from][tx.origin] = allowed[_from][tx.origin].sub(_value);
     emit Transfer(_from, _to, _value);
     return true;
   }
