@@ -2,6 +2,8 @@ pragma solidity ^0.5.0;
 
 contract Ticket {
 
+    address platformAddress;
+
     /**
      * enum containing 'seating' categories
      * floor:       general standing zone(s)
@@ -68,12 +70,23 @@ contract Ticket {
     }
 
     /**
+     * sets the address of the platform contract
+     *
+     * param address address of platform contract
+     */
+    function setPlatformAddress(address _platform) external {
+        require(platformAddress == address(0), "Changing platform address is not allowed");
+        platformAddress = _platform;
+    }
+
+    /**
      * transfers ticket to the specified address
      *
      * param ticketID ID of ticket to transfer
      * param transferTo address to transfer ticket to
      */
-    function transferTicket(uint256 ticketId, address transferTo) public validTicketId(ticketId) ownerOnly(ticketId) {
+    function transferTicket(uint256 ticketId, address transferTo) public validTicketId(ticketId) {
+        require(msg.sender == platformAddress || transferTo == platformAddress, "User to user transfers are diasllowed");
         tickets[ticketId].prevowner = tickets[ticketId].owner;
         tickets[ticketId].owner = transferTo;
     }
