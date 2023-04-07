@@ -15,7 +15,14 @@
 
 ## Introduction
 
-The purpose of this project is to leverage on cutting-edge capabilities of blockchain technology to effectively tackle the problem of scalping in the context of popular events. We aim to utilise the blockchain technology to create a secure, transparent, and decentralized system that helps event organizers, ticketing agencies and consumers to effectively manage the sale and distribution of tickets without unfair competition.
+The purpose of this project is to leverage on cutting-edge capabilities of blockchain technology to effectively tackle the problem of scalping in the context of popular events. We aim to utilise the blockchain technology to create a secure, transparent, and decentralized system that helps event organisers, ticketing agencies and consumers to effectively manage the sale and distribution of tickets without unfair competition.
+
+## Glossary
+
+| Name | Explanation |
+| -- | -- |
+| Buyer | User that purchases event tickets on the platform |
+| Seller | User that lists events on the platform |
 
 ## Business Model
 
@@ -23,13 +30,7 @@ The current challenges with the ticket sale systems are the existence of scalper
 
 ### Stakeholder benefits
 
-
-## Glossary
-
-| Name | Explanation |
-| -- | -- |
-| Buyer | User that purchases event tickets on the platform |
-| Organiser | User that lists events on the platform |
+As a buyer, 
 
 ## Contents
 
@@ -42,18 +43,18 @@ The current challenges with the ticket sale systems are the existence of scalper
 
 An overview of the main components and how different stakeholders and contracts intereact is explained in detail below.
 
-`Platform.sol` is the main contract that Organisers or Buyers will interact with.
+`Platform.sol` is the main contract that Sellers or Buyers will interact with.
 
 The main capabilities of `Platform.sol` is to:
-* Allow Organisers to list events on the platform.
+* Allow Sellers to list events on the platform.
 * Allow Buyers to bid after an event is listed and buy tickets upon successful bidding.
 
 `Platform.sol` interacts with other contracts such as:
 
-* `Account.sol` : conducts verification on whether an Organiser is a verified on the Platform to list events. It also certifies a set of trusted accounts to provide rights for them to verify Organisers.
+* `Account.sol` : conducts verification on whether an Seller is a verified on the Platform to list events. It also certifies a set of trusted accounts to provide rights for them to verify Sellers.
 * `Event.sol` : creation and storing of the event information & creation of tickets through `Ticket.sol`.
 
-`EventTokenMarket.sol` along with `EventTokenMarketAlgorithm` are the contracts where buyers can trade tokens that will be used during the bidding ticket process.
+`EventTokenMarket.sol` along with `EventTokenMarketAlgorithm.sol` are the contracts where buyers can trade tokens that will be used during the bidding ticket process.
 
 ## Implementation
 
