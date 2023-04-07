@@ -18,7 +18,7 @@ contract Platform {
     event BuyTicket (uint256 eventId, address buyer);
     event RefundTicket (uint256 ticketId, address refunder);
     event SellerEventEnd (uint256 eventId);
-    event PlatformEventEnd (uint256 eventId);
+    event OwnerEventEnd (uint256 eventId);
 
     mapping(address => uint256) sellerDepositedValue;
     address owner;
@@ -292,14 +292,31 @@ contract Platform {
     }
 
     /**
-     * declare the end of a successful event and transfer ETH to seller
+     * seller requesting to end a successful event 
      *
      * param eventId    id of event
      */
-    function endEvent(uint256 eventId) public isOrganiser() {
+    function sellerEndEvent(uint256 eventId) public isOrganiser() {
         address seller = eventContract.getEventSeller(eventId);
         require(seller == msg.sender, "Only original seller can end event");
-        msg.sender.transfer(sellerDepositedValue[seller]);
+        require(eventContract.getEventState(eventId) == Event.eventState.buyAndRefund, "Event not at buyAndRefund state");
+
+        eventContract.setEventState(eventId, Event.eventState.sellerEventEnd);
+        emit SellerEventEnd(eventId);
+    }
+
+    /**
+     * owner to declare the end of a successful event, platform to transfer ETH (ticket sales and deposits) to seller
+     *
+     * param eventId    id of event
+     */
+    function endSuccessfulEvent(uint256 eventId) public {
+        require(owner == msg.sender, "Only owner can call this function");
+        require(eventContract.getEventState(eventId) == Event.eventState.sellerEventEnd, "Original seller has yet to end the event");
+
+        address seller = eventContract.getEventSeller(eventId);
+        address payable addr = address(uint256(seller));
+        addr.transfer(sellerDepositedValue[seller]);
 
         // Calculating ticket sales
         uint256 numOfTicketsSold = eventContract.getEventCapacity(eventId) - eventContract.getEventTicketsLeft(eventId);
@@ -307,10 +324,33 @@ contract Platform {
 
         // Platform keeps 5% commission of ticket sales, rest goes to Seller when event ends
         uint256 sellerProfits = 95 * ticketSales /100;
-        msg.sender.transfer(sellerProfits);
+        addr.transfer(sellerProfits);
 
-        eventContract.setEventState(eventId, Event.eventState.sellerEventEnd);
-        emit SellerEventEnd(eventId);
+        eventContract.setEventState(eventId, Event.eventState.platformEventEnd);
+        emit OwnerEventEnd(eventId);
+    }
+
+    /**
+     * owner to declare a failed event, platform to refund buyers of ETH and keep seller's deposit
+     *
+     * param eventId    id of event
+     */
+    function endUnsuccessfulEvent (uint256 eventId) public {
+        require(owner == msg.sender, "Only platform can call this function");
+
+        uint256 firstTicketId = eventContract.getEventFirstTicketId(eventId);
+        uint256 capacity = eventContract.getEventCapacity(eventId);
+        uint256 ticketPrice = eventContract.getEventTicketPrice(eventId);
+
+        for (uint256 i = firstTicketId; i <= firstTicketId + capacity - 1; i++) {
+            address payable addr = address(uint256(ticketContract.getTicketOwner(i)));
+            if(addr != address(this)) {
+                addr.transfer(ticketPrice);
+            } 
+        }
+
+        eventContract.setEventState(eventId, Event.eventState.platformEventEnd);
+        emit OwnerEventEnd(eventId);
     }
 
     /**
@@ -322,10 +362,6 @@ contract Platform {
     function calMinimumDeposit(uint256 capacity, uint256 priceOfTicket) public pure returns(uint256){
         // 1USD = 50,000 wei
         return (capacity * priceOfTicket)/2 * 50000;
-    }
-
-    function getPlatformAddr() public view returns(address) {
-        return address(this);
     }
 
 }
