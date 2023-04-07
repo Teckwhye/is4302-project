@@ -337,41 +337,43 @@ contract("Platform", function (accounts) {
         assert.strictEqual(owner2, accounts[3]);
     });
 
-    it("Only original seller can end event", async () => {
+    it("Only original seller can call 'sellerEndEvent' function after event successfully ended", async () => {
         await accountInstance.verifyAccount(accounts[8], {from: accounts[0]});
 
-        await platformInstance.listEvent("Title 2", "Venue 2", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 2", "Venue 2", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         
-        await truffleAssert.reverts(platformInstance.endEvent(latestEventId, {from: accounts[2]}),"You are not a verified seller")
-        await truffleAssert.reverts(platformInstance.endEvent(latestEventId, {from: accounts[8]}),"Only original seller can end event")
-    });
+        await truffleAssert.reverts(platformInstance.sellerEndEvent(latestEventId, {from: accounts[2]}),"You are not a verified seller");
+        await truffleAssert.reverts(platformInstance.sellerEndEvent(latestEventId, {from: accounts[8]}),"Only original seller can end event");
+        await truffleAssert.reverts(platformInstance.sellerEndEvent(latestEventId, {from: accounts[1]}),"Event not at buyAndRefund state");
 
-    it("Seller deposits and 95% of ticket sales, successfully transferred to seller when event ends", async () => {
-        await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
-        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
         await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
         await platformInstance.buyTickets(latestEventId, 4, {from: accounts[3], value: oneEth.dividedBy(4)});
+        await platformInstance.sellerEndEvent(latestEventId, {from: accounts[1]});
+
+        assert(await eventInstance.getEventState(latestEventId), eventInstance.getSellerEventEndState(), "Event not at right state");
+    });
+
+    it("Owner calls 'endSuccessfulEvent', seller deposits + 95% of ticket sales transferred to seller when event ends", async () => {
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+    
+        await truffleAssert.reverts(platformInstance.endSuccessfulEvent(latestEventId, {from: accounts[1]}),"Only owner can call this function");
 
         // Find initialSellerBalance before performing endEvent function
         let initialSellerBalance = new BigNumber(await web3.eth.getBalance(accounts[1]));
-
-        // Find gasFees for performing endEvent function
-        let end = await platformInstance.endEvent(latestEventId, {from: accounts[1]});
-        let gasUsed = new BigNumber(end.receipt.gasUsed);
-        let tx = await web3.eth.getTransaction(end.tx);
-        let gasPrice = new BigNumber(tx.gasPrice);
-        let gasFees = gasPrice.multipliedBy(gasUsed);
+        
+        await platformInstance.endSuccessfulEvent(latestEventId, {from: accounts[0]});
+        assert(await eventInstance.getEventState(latestEventId), eventInstance.getPlatformEventEnd(), "Event not at right state");
 
         let finalSellerBalance = new BigNumber(await web3.eth.getBalance(accounts[1]));
 
         // Seller takes 95% of ticket sales
         let sellerTicketSales = new BigNumber(95 * 4 * 65 / 100);
 
-        // sellerBalanceBeforeEndEvent + sellerTicketSales + depositedEth - gasFeesForEndEvent = finalSellerBalance
-        initialSellerBalance = initialSellerBalance.plus(sellerTicketSales).plus(oneEth).minus(gasFees);
-        
+        // initialSellerBalance + sellerTicketSales + depositedEth = finalSellerBalance
+        initialSellerBalance = initialSellerBalance.plus(sellerTicketSales).plus(oneEth);
+
         await assert(
             finalSellerBalance.isEqualTo(initialSellerBalance),
             "Seller did not received right amount of Eth when event ended."
@@ -379,9 +381,7 @@ contract("Platform", function (accounts) {
     });
 
     it("Platform keeps 5% commission of ticket sales when event ends", async () => {
-        let platformAddr = await platformInstance.getPlatformAddr();
-        
-        let platformOriginalEth = new BigNumber(await accountInstance.getBalance(platformAddr));
+        let platformOriginalBalance = new BigNumber(await accountInstance.getBalance(platformInstance.address));
         await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
 
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
@@ -389,17 +389,68 @@ contract("Platform", function (accounts) {
         await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
         await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
         await platformInstance.buyTickets(latestEventId, 4, {from: accounts[3], value: oneEth.dividedBy(4)});
-        await platformInstance.endEvent(latestEventId, {from: accounts[1]});
+        await platformInstance.sellerEndEvent(latestEventId, {from: accounts[1]});
+        await platformInstance.endSuccessfulEvent(latestEventId, {from: accounts[0]});
 
-        let platformAmt = new BigNumber(await accountInstance.getBalance(platformAddr));
+        let finalPlatformBalance = new BigNumber(await accountInstance.getBalance(platformInstance.address));
 
         let platformCommission = new BigNumber(5 * 4 * 65 / 100);
-        let platformAmt2 = platformOriginalEth.plus(platformCommission);
-        
+
+        // platformOriginalBalance + sellerTicketSales + depositedEth = finalPlatformBalance
+        platformOriginalBalance = platformOriginalBalance.plus(platformCommission);
+
         await assert(
-            platformAmt.isEqualTo(platformAmt2),
-            "Seller did not received right amount of Eth when event ended."
+            finalPlatformBalance.isEqualTo(platformOriginalBalance),
+            "Seller did not received right amount of commission when event ended."
         )
+    });
+
+    it("Failed event, buyers refunded accordingly, platform keeps deposits", async () => {
+        let platformOriginalBalance = new BigNumber(await accountInstance.getBalance(platformInstance.address));
+        await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
+
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+
+        await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+
+        let acc2OriginalBalance = new BigNumber(await accountInstance.getBalance(accounts[2]));
+        let acc3OriginalBalance = new BigNumber(await accountInstance.getBalance(accounts[3]));
+
+        let buy2 = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[2], value: oneEth.dividedBy(4)});
+
+        // Find gasFees for performing buyTickets function
+        let gasUsed = new BigNumber(buy2.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(buy2.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+        let gasFees2 = gasPrice.multipliedBy(gasUsed);
+
+        let buy3 = await platformInstance.buyTickets(latestEventId, 2, {from: accounts[3], value: oneEth.dividedBy(4)});
+        
+        // Find gasFees for performing buyTickets function
+        gasUsed = new BigNumber(buy3.receipt.gasUsed);
+        tx = await web3.eth.getTransaction(buy3.tx);
+        gasPrice = new BigNumber(tx.gasPrice);
+        gasFees3 = gasPrice.multipliedBy(gasUsed);
+
+        await platformInstance.endUnsuccessfulEvent(latestEventId, {from: accounts[0]});
+
+        let acc2FinalBalance = new BigNumber(await accountInstance.getBalance(accounts[2]));
+        let acc3FinalBalance = new BigNumber(await accountInstance.getBalance(accounts[3]));
+        let finalPlatformBalance = new BigNumber(await accountInstance.getBalance(platformInstance.address));
+
+        // acc3OriginalBalance - gasFees3 = acc3FinalBalance
+        acc3OriginalBalance = acc3OriginalBalance.minus(gasFees3)
+        // acc2OriginalBalance - gasFees2 = acc2FinalBalance
+        acc2OriginalBalance = acc2OriginalBalance.minus(gasFees2);
+        // platformOriginalBalance + depositedEth = finalPlatformBalance
+        platformOriginalBalance = platformOriginalBalance.plus(oneEth);
+
+        await assert(platformOriginalBalance.isEqualTo(finalPlatformBalance), "Platform did not receive seller's deposit.")
+
+        await assert(acc2OriginalBalance.isEqualTo(acc2FinalBalance), "Buyer not refunded correctly.")
+
+        await assert(acc3OriginalBalance.isEqualTo(acc3FinalBalance), "Buyer not refunded correctly.")
     });
 
 })
