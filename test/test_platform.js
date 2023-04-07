@@ -86,13 +86,6 @@ contract("Platform", function (accounts) {
         await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
     });
 
-    it("List Event", async () => {
-        await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
-        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
-        latestEventId = (await eventInstance.getLatestEventId()).toNumber();
-        const title = await eventInstance.getEventTitle(latestEventId);
-        await assert("Title 0", title, "Failed to create event");
-    });
     it ("Incorrect Commence Bidding", async () => {
         // Not seller of event
         await truffleAssert.reverts(
@@ -120,7 +113,7 @@ contract("Platform", function (accounts) {
         truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
 
         // enum bidState[1]
-        let bidState = await eventInstance.getEventBidState(latestEventId);
+        let bidState = await eventInstance.getEventState(latestEventId);
         await assert.equal(bidState, 1, "Bidding not commenced");
     });
 
@@ -174,7 +167,7 @@ contract("Platform", function (accounts) {
         truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // enum bidState[2]
-        let bidState = await eventInstance.getEventBidState(latestEventId);
+        let bidState = await eventInstance.getEventState(latestEventId);
         await assert.equal(bidState, 2, "Bidding not closed");
     });
 
@@ -201,7 +194,7 @@ contract("Platform", function (accounts) {
     it("Return ETH back to buyer if msg.value > priceOfTickets", async () => {
         // Listing of event with 5 tickets
         await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
-        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 0", title, "Failed to create event");
@@ -212,19 +205,16 @@ contract("Platform", function (accounts) {
 
         // Close bidding
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Buy ticket
         let initialbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
         let buyTicket = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth});
-        truffleAssert.eventEmitted(buyTicket, "TransferToBuyerSuccessful");
+        truffleAssert.eventEmitted(buyTicket, "BuyTicket");
         let gasUsed = new BigNumber(buyTicket.receipt.gasUsed);
         let tx = await web3.eth.getTransaction(buyTicket.tx);
         let gasPrice = new BigNumber(tx.gasPrice);
 
-        // not the best way
-        let buyTicketProcess = await platformInstance.buyTickets(latestEventId, 3, {from: accounts[3], value: oneEth.dividedBy(4)})
-        truffleAssert.eventEmitted(buyTicketProcess, 'BuyTicket');
         // Ensure ETH is returned
         let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
         let priceOfTicket = new BigNumber(await eventInstance.getEventTicketPrice(latestEventId));
