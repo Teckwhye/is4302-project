@@ -18,7 +18,7 @@ contract Platform {
     event BuyTicket (uint256 eventId, address buyer);
     event RefundTicket (uint256 ticketId, address refunder);
     event SellerEventEnd (uint256 eventId);
-    event PlatformEventEnd (uint256 eventId);
+    event OwnerEventEnd (uint256 eventId);
 
     mapping(address => uint256) sellerDepositedValue;
     address owner;
@@ -302,6 +302,7 @@ contract Platform {
         require(eventContract.getEventState(eventId) == Event.eventState.buyAndRefund, "Event not at buyAndRefund state");
 
         eventContract.setEventState(eventId, Event.eventState.sellerEventEnd);
+        emit SellerEventEnd(eventId);
     }
 
     /**
@@ -326,6 +327,7 @@ contract Platform {
         addr.transfer(sellerProfits);
 
         eventContract.setEventState(eventId, Event.eventState.platformEventEnd);
+        emit OwnerEventEnd(eventId);
     }
 
     /**
@@ -348,6 +350,7 @@ contract Platform {
         }
 
         eventContract.setEventState(eventId, Event.eventState.platformEventEnd);
+        emit OwnerEventEnd(eventId);
     }
 
     /**
