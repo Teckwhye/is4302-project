@@ -33,9 +33,16 @@ contract("Platform", function (accounts) {
     var latestEventId;
 
     it("Account(Seller) unable to list event if yet to be verified", async () => {
+        // Add event token authentication
+        truffleAssert.eventEmitted(
+            await eventTokenInstance.addAuthorisedAddress(platformInstance.address), 
+            'NewAuthorisedAddress');
+        assert.equal(await eventTokenInstance.checkAuthorisedAddress(platformInstance.address), true);
+        // end of add
+            
         await truffleAssert.reverts(
             platformInstance.listEvent(
-                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: 0}),
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 65, accounts[1], {from: accounts[1], value: 0}),
             "You are not a verified seller"
         );
     });
@@ -66,14 +73,14 @@ contract("Platform", function (accounts) {
     it("Insufficient deposits to list event", async () => {
         await truffleAssert.reverts(
             platformInstance.listEvent(
-                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: 0}),
+                "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 65, accounts[1], {from: accounts[1], value: 0}),
             "Insufficient deposits. Need deposit minimum (capacity * priceOfTicket)/2 * 50000 wei to list event."
         );
     });
 
     it("Event listed successfully", async () => {
         await platformInstance.listEvent(
-            "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
+            "Harry Styles concert", "Stadium", 2024, 03, 21, 18, 00, 00, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
         latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         var eventTitle = await eventInstance.getEventTitle(latestEventId);
         await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
@@ -81,7 +88,7 @@ contract("Platform", function (accounts) {
 
     it("List Event", async () => {
         await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
-        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 0", title, "Failed to create event");
@@ -99,12 +106,12 @@ contract("Platform", function (accounts) {
 
     it("Close Bidding", async () => {
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
     });
 
     it("Buy Ticket", async () => {
         let buyTicket = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth.dividedBy(4)});
-        truffleAssert.eventEmitted(buyTicket, "TransferToBuyerSuccessful");
+        truffleAssert.eventEmitted(buyTicket, "BuyTicket");
     });
 
     it("Insufficent funds to buy tickets", async () => {
@@ -131,12 +138,12 @@ contract("Platform", function (accounts) {
 
         // not the best way
         let buyTicketProcess = await platformInstance.buyTickets(latestEventId, 3, {from: accounts[3], value: oneEth.dividedBy(4)})
-        truffleAssert.eventEmitted(buyTicketProcess, 'TransferToBuyerSuccessful');
+        truffleAssert.eventEmitted(buyTicketProcess, 'BuyTicket');
     });
 
     it("Test Priority System", async () => {
         // Listing of event with 5 tickets
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 5, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 1", title, "Failed to create event");
@@ -180,7 +187,7 @@ contract("Platform", function (accounts) {
    
         // Close bid
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Ensure accurate ticket distribution
         let owner1 = await ticketInstance.getTicketOwner(10); // ticketId 10 belongs to accounts[2]
@@ -197,7 +204,7 @@ contract("Platform", function (accounts) {
 
     it("Test Updating of Bid", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 1", title, "Failed to create event");
@@ -238,7 +245,7 @@ contract("Platform", function (accounts) {
    
         // Close bid
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Ensure accurate ticket distribution
         let owner1 = await ticketInstance.getTicketOwner(15); // ticketId 15 belongs to accounts[3]
@@ -247,7 +254,7 @@ contract("Platform", function (accounts) {
 
     it("Test Unsuccessful Bid Return ETH", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 1", title, "Failed to create event");
@@ -270,7 +277,7 @@ contract("Platform", function (accounts) {
    
         // Close bid
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Ensure accurate ticket distribution
         let owner1 = await ticketInstance.getTicketOwner(16); // ticketId 16 belongs to accounts[2]
@@ -284,7 +291,7 @@ contract("Platform", function (accounts) {
 
     it("Test Successful Bid -> Refund Ticket -> Buy Ticket", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert("Title 1", title, "Failed to create event");
@@ -299,7 +306,7 @@ contract("Platform", function (accounts) {
    
         // Close bid
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
-        truffleAssert.eventEmitted(bidClosed, "BidBuy");
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
 
         // Ensure accurate ticket distribution
         let owner1 = await ticketInstance.getTicketOwner(17); // ticketId 17 belongs to accounts[2]
@@ -323,11 +330,76 @@ contract("Platform", function (accounts) {
 
         // accounts[3] buy ticket
         let buyTicket1 = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth});
-        truffleAssert.eventEmitted(buyTicket1, "TransferToBuyerSuccessful");
+        truffleAssert.eventEmitted(buyTicket1, "BuyTicket");
 
         // Ensure accurate ticket distribution
         let owner2 = await ticketInstance.getTicketOwner(17); // ticketId 17 belongs to accounts[3]
         assert.strictEqual(owner2, accounts[3]);
+    });
+
+    it("Only original seller can end event", async () => {
+        await accountInstance.verifyAccount(accounts[8], {from: accounts[0]});
+
+        await platformInstance.listEvent("Title 2", "Venue 2", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        
+        await truffleAssert.reverts(platformInstance.endEvent(latestEventId, {from: accounts[2]}),"You are not a verified seller")
+        await truffleAssert.reverts(platformInstance.endEvent(latestEventId, {from: accounts[8]}),"Only original seller can end event")
+    });
+
+    it("Seller deposits and 95% of ticket sales, successfully transferred to seller when event ends", async () => {
+        await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        await platformInstance.buyTickets(latestEventId, 4, {from: accounts[3], value: oneEth.dividedBy(4)});
+
+        // Find initialSellerBalance before performing endEvent function
+        let initialSellerBalance = new BigNumber(await web3.eth.getBalance(accounts[1]));
+
+        // Find gasFees for performing endEvent function
+        let end = await platformInstance.endEvent(latestEventId, {from: accounts[1]});
+        let gasUsed = new BigNumber(end.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(end.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+        let gasFees = gasPrice.multipliedBy(gasUsed);
+
+        let finalSellerBalance = new BigNumber(await web3.eth.getBalance(accounts[1]));
+
+        // Seller takes 95% of ticket sales
+        let sellerTicketSales = new BigNumber(95 * 4 * 65 / 100);
+
+        // sellerBalanceBeforeEndEvent + sellerTicketSales + depositedEth - gasFeesForEndEvent = finalSellerBalance
+        initialSellerBalance = initialSellerBalance.plus(sellerTicketSales).plus(oneEth).minus(gasFees);
+        
+        await assert(
+            finalSellerBalance.isEqualTo(initialSellerBalance),
+            "Seller did not received right amount of Eth when event ended."
+        )
+    });
+
+    it("Platform keeps 5% commission of ticket sales when event ends", async () => {
+        let platformAddr = await platformInstance.getPlatformAddr();
+        
+        let platformOriginalEth = new BigNumber(await accountInstance.getBalance(platformAddr));
+        await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 5, 65, accounts[1], {from: accounts[1], value: oneEth});
+
+        let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+
+        await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        await platformInstance.buyTickets(latestEventId, 4, {from: accounts[3], value: oneEth.dividedBy(4)});
+        await platformInstance.endEvent(latestEventId, {from: accounts[1]});
+
+        let platformAmt = new BigNumber(await accountInstance.getBalance(platformAddr));
+
+        let platformCommission = new BigNumber(5 * 4 * 65 / 100);
+        let platformAmt2 = platformOriginalEth.plus(platformCommission);
+        
+        await assert(
+            platformAmt.isEqualTo(platformAmt2),
+            "Seller did not received right amount of Eth when event ended."
+        )
     });
 
 })
