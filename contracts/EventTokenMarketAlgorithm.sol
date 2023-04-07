@@ -42,7 +42,7 @@ contract EventTokenMarketAlgorithm {
         eventTokenContract = eventTokenAddress;
     }
 
-    // modifier to ensure only market algorithm can do this
+    // modifier to ensure only token market can do this
     modifier onlyEventTokenMarketAddress() {
         require(msg.sender == eventTokenMarketAddress, "You are not allowed to do this");
         _;
@@ -81,41 +81,48 @@ contract EventTokenMarketAlgorithm {
         
         // Save old quantity
         uint256 amountOfTokens = sellOrderList[sellOrderId].quantity;
+        currentSellQuantity -= amountOfTokens;
         // Remove quantity
         sellOrderList[sellOrderId].quantity = 0;
         return amountOfTokens;
     }
 
     /**
-     * All checks to be done on EventTokenMarket
+     * All checks to be done on EventTokenMarket, ensure that no one will buy more than what is avaiable.
      * buy tokens
      *
      * param sellOrderId id of sell order to remove
      */
-    function buyTokens(uint256[2] memory order) onlyEventTokenMarketAddress public returns (uint256[] memory, address[] memory, uint256){
+    function buyTokens(uint256[2] memory order)  public returns (uint256[] memory, address[] memory, uint256){
 
         uint256 quantityToBuy = order[0];
-        uint256[] memory quantities;
-        address[] memory sellers;
+        uint256[] memory quantities = new uint256[](10);
+        address[] memory sellers = new address[](10);
         uint256 startnum = 0;
-        while (sellOrderFirstNum <= sellOrderLastNum && quantityToBuy > 0) { // There is still tokens to sell
-            uint256 quantityAvailable = sellOrderList[sellOrderFirstNum].quantity;
-            if (quantityAvailable > quantityToBuy) { // Seller can take entire order
-                quantities[startnum] = quantityToBuy;
+        while (sellOrderFirstNum < sellOrderLastNum && quantityToBuy > 0) { // There is still tokens to sell
+             uint256 quantityAvailable = sellOrderList[sellOrderFirstNum].quantity;
+            if (quantityAvailable > quantityToBuy) { // Seller have leftover tokens
+                quantities[startnum] = quantityToBuy; 
                 sellers[startnum] = sellOrderList[sellOrderFirstNum].seller;
                 sellOrderList[sellOrderFirstNum].quantity = sellOrderList[sellOrderFirstNum].quantity - quantityToBuy;
+                currentSellQuantity -= quantityToBuy;
                 break;
             } 
-            else {
-                quantityToBuy = quantityToBuy - quantityAvailable;
-                quantities[startnum] = quantityAvailable;
-                sellers[startnum] = sellOrderList[sellOrderFirstNum].seller;
-                sellOrderList[sellOrderFirstNum].quantity = 0;
+            else { // Seller sells everything
+                if (quantityAvailable == 0) { // Check if no quantity
+                    sellOrderFirstNum = sellOrderFirstNum + 1;
+                    continue;
+                }
+                quantityToBuy = quantityToBuy - quantityAvailable; // Update total quantity to buy
+                quantities[startnum] = quantityAvailable; // Seller sold quantityAvailable
+                sellers[startnum] = sellOrderList[sellOrderFirstNum].seller; // Who is the seller
+                sellOrderList[sellOrderFirstNum].quantity = 0; // Seller have no more tokens
+                startnum = startnum + 1; // increment to add new seller
                 sellOrderFirstNum = sellOrderFirstNum + 1;
-                startnum = startnum + 1;
+                currentSellQuantity -= quantityAvailable;
             }
         }
-        startnum = startnum + 1;
+        startnum += 1;
         return (quantities, sellers, startnum);
     }
 
@@ -126,6 +133,11 @@ contract EventTokenMarketAlgorithm {
      * returns price and token quantity
      */
     function getPriceOfBuyOrder(uint256 _quantity) public view returns (uint256[2] memory) {
+        uint256[2] memory order;
+        if (currentSellQuantity == 0) {
+            order = [uint256(0),0];
+            return order;
+        }
         uint256 basePriceOfToken = eventTokenContract.getBasePriceOfToken();
         uint256 buyQuantity = _quantity;
         
@@ -133,9 +145,9 @@ contract EventTokenMarketAlgorithm {
         if (_quantity >= currentSellQuantity) {
             buyQuantity = currentSellQuantity;
         }
-        uint256 percentageOfSaleMarket = ((buyQuantity * 100 - 1) / currentSellQuantity ); // Every percentage of market will increase price of token by 10000
+        uint256 percentageOfSaleMarket = (((buyQuantity * 100) -1) / currentSellQuantity ); // Every percentage of market will increase price of token by 10000
         uint256 priceOfEachToken = basePriceOfToken + (10000 * percentageOfSaleMarket);
-        uint256[2] memory order = [buyQuantity, priceOfEachToken];
+        order = [buyQuantity, priceOfEachToken];
         return order;
     }
 
@@ -156,5 +168,6 @@ contract EventTokenMarketAlgorithm {
     function getCurrentSellQuantity() public view returns (uint256) {
         return currentSellQuantity;
     }
+    
     
 }

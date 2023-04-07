@@ -11,9 +11,10 @@ contract EventTokenMarket {
    address _owner;                                       // Owner of event token market
    mapping(address => uint256[]) usersCurrentListing;     // Save history of user listing
 
-   event SellOrderListed(uint256 orderId, address _seller, uint256 _quantity);
+   event SellOrderListed(uint256 sellOrderId, address _seller, uint256 _quantity);
    event SellOrderDelisted(address _seller, uint256 sellOrderId);
    event BuyToken(address buyer, uint256 quantity, uint256 priceOfEachToken);
+   event EarnedEth(address _seller, uint256 amount);
 
    modifier onlyOwner() {
          require(msg.sender == _owner, "You do not have permission to do this");
@@ -49,10 +50,10 @@ contract EventTokenMarket {
      */
    function list(uint256 _quantity) public {
       require(eventTokenContract.checkEventTokenOf(msg.sender) >= _quantity, "You do not have enough event tokens to sell");
-      eventTokenContract.transferFrom(msg.sender, address(this), _quantity);
-      uint256 sellOrderID = marketAlgorithmContract.addSellOrder(msg.sender, _quantity);
-      usersCurrentListing[msg.sender].push(sellOrderID);
-      emit SellOrderListed(sellOrderID, msg.sender, _quantity);
+      eventTokenContract.approvedTransferFrom(msg.sender, address(this), _quantity);
+      uint256 sellOrderId = marketAlgorithmContract.addSellOrder(msg.sender, _quantity);
+      usersCurrentListing[msg.sender].push(sellOrderId);
+      emit SellOrderListed(sellOrderId, msg.sender, _quantity);
    }
 
    /**
@@ -64,7 +65,7 @@ contract EventTokenMarket {
    function unlist(uint256 sellOrderId) public {
       require(marketAlgorithmContract.isSellOrderSeller(msg.sender, sellOrderId), "You did not list this order");
       uint256 amountOfTokens = marketAlgorithmContract.removeSellOrder(sellOrderId);
-      eventTokenContract.transferFrom(address(this), msg.sender, amountOfTokens);
+      eventTokenContract.approvedTransferFrom(address(this), msg.sender, amountOfTokens);
       emit SellOrderDelisted(msg.sender, sellOrderId);
    }
 
@@ -78,7 +79,7 @@ contract EventTokenMarket {
 
       uint256[2] memory order = marketAlgorithmContract.getPriceOfBuyOrder(_quantity);
       uint256 quantity = order[0];         // Quantity of tokens that he can buy
-      require(quantity > 0, "No tokens available to purchase");
+      require(_quantity <= quantity, "Quantity of tokens to purchase is more than total selling supply");
 
       uint256 priceOfEachToken = order[1]; // Price of each token
       uint256 totalPrice = (quantity * priceOfEachToken); // 0 is quantity, 1 is price of each token
@@ -95,15 +96,16 @@ contract EventTokenMarket {
       (quantities, sellers, startnum) = marketAlgorithmContract.buyTokens(order);
 
       for (uint256 i = 0; i < startnum; i++ ) {
-         uint256 comissionFee = ((quantities[i] * priceOfEachToken) / _comissionFeePercentage); 
+         uint256 comissionFee = (((quantities[i] * priceOfEachToken) / 100) *_comissionFeePercentage); 
          uint256 priceToTransfer = (quantities[i] * priceOfEachToken) - comissionFee;
          address payable to = address(uint160(sellers[i]));
          to.transfer(priceToTransfer);
+         emit EarnedEth(to, priceToTransfer);
          // Store total commission fee
          totalComissionFee = totalComissionFee + comissionFee;
       }
 
-      eventTokenContract.transferFrom(address(this), msg.sender, quantity);
+      eventTokenContract.approvedTransferFrom(address(this), msg.sender, quantity);
       emit BuyToken(msg.sender, quantity, order[1]);
 
    }
@@ -126,4 +128,7 @@ contract EventTokenMarket {
       return _owner;
    }
 
+   function getCurrentSellQuantity() public view returns(uint256){
+      return marketAlgorithmContract.getCurrentSellQuantity();
+   }
 }
