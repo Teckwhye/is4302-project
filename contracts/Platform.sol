@@ -330,7 +330,8 @@ contract Platform {
         for (uint256 i=firstTicketId; i < firstTicketId + eventContract.getEventCapacity(eventId); i++) {
             address _to = ticketContract.getTicketOwner(i);
             uint256 ticketPrice = ticketContract.getTicketPrice(i);
-            eventTokenContract.mintToken(ticketPrice, _to);
+            uint256 amtOfWei = (ticketPrice / 100) * 5;
+            eventTokenContract.mintToken(amtOfWei, _to);
         }
 
         eventContract.setEventState(eventId, Event.eventState.platformEventEnd);
