@@ -55,7 +55,9 @@ contract EventToken {
      * param address to get token
      * 
      */
-    function mintToken(uint256 amtOfWei, address _to) public onlyAuthorisedAddress {
+    function mintToken(uint256 priceOfTicket, address _to) public onlyAuthorisedAddress {
+        // Take 5% of price ticket to convert to tokens
+        uint256 amtOfWei = (priceOfTicket / 100) * 5;
         uint256 amtOfToken = amtOfWei / basePriceOfToken;
         erc20Contract.mint(_to, amtOfToken);
         currentSupply = currentSupply + amtOfToken;
