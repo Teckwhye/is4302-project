@@ -192,7 +192,7 @@ AccountContract.verifyAccount(address(account[2]))
 
 An example scenario of the validation process will be as follows:
 1. `Account.sol` certifies *account[1]* that can verify other accounts. The trusted accounts will be the oracle.
-2. *account[2]* wants to list an event on the platform and has requested to be verified. *account[1]* can now conduct background checks on the authenticity of *acccount[2]*. This process will be done off-chain
+2. *account[2]* wants to list an event on the platform and has requested to be verified. *account[1]* can now conduct background checks on the authenticity of *account[2]*. This process will be done off-chain
 3. Upon successful verification, *account[1]* verifies *account[2]* and now *account[2]* can list on the platform.
 
 The team understand that this solution is not a full-proof solution to the oracle problem. This is due to `Account.sol` being a single point of failure and an account is also certified by only one certifier without any cross-checking.
