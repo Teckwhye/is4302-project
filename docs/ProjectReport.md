@@ -6,7 +6,7 @@
 | ---|---|
 | Han Jun Ding | A0221230E |
 | Sean Phang | |
-| Tan Teck Hwee | |
+| Tan Teck Hwee | A0217207M |
 | Teo Chin Kai Remus| A0217148E |
 | Teo Phing Huei, Aeron | A0225860E |
 
@@ -206,3 +206,45 @@ The purpose of the above methods is to prevent organisers from being irresponsib
 Note: It is assumed here that the contract owner will be honest in verifying the actual event outcome and calling the appropriate ending function.
 
 ### Tokenomics
+#### Token Supply and Distribution
+The total supply of EventToken is not capped as we believed the high usage of it (Which the token will be burned when used) will ensure the value of the token. EventToken will be distributed when Buyers attended a successful event as defined above and cannot be minted directly. EventToken are only minted when there is a successful event and it will be awarded to those that attend the event. The amount distributed is determined by 5 percent of event ticket price divided by 50,000 wei. For example, an event ticket that cost 1,000,000 wei will allow a buyer to attain 1 EventToken as 5 percent of 1,000,000 is 50,000 which divded by 50,000 will be 1.
+
+#### Token Utility
+EventToken can only be utilised in bidding to gain priority in purchasing ticket. EventToken cannot be transfer from Buyer to Buyer and can only be traded on EventTokenMarket. The main idea of trading the EventToken will be to either gain more tokens for bidding by purchasing them or to earn Ethereum by selling them.
+
+#### Token Value and Delation
+EventToken value is based on popularity of events and the demand for event tickets. If there is a demand for event tickets, more EventToken will be required for buyers to ensure that they have a priority in purchasing tickets. When a Buyer requires more EventToken, it can be purchased on EventTokenMarket if only another person have listed a EventToken to sell. The price of the EventToken is then decided by the algorithm of the market to ensure no foulplay which will be explained in the section EventTokenMarket below. To ensure that the amount of circulating tokens are not infinite, EventTokens will be burned when used in bidding which also means that no refund will be given for biddings.
+
+### EventTokenMarket
+Buyers can choose to either list their EventTokens or to purchase more EventTokens with `EventTokenMarket.sol`. The contract will take a 10 percent cut for every purchase.
+#### List
+Buyers can only list EventTokens that they have and these tokens will be transferred to `EventTokenMarket.sol` contract. When a Buyer list EventTokens, it will emit SellOrderListed event which they can see their sellOrderId which can be used to delist their order to get back their tokens.
+
+Example (Listing 5 EventTokens):
+```
+EventTokenMarketContract.list(5)
+```
+#### Delist
+Buyers can only delist EventTokens by using the sellOrderId emitted when they list their tokens in `EventTokenMarket.sol` contract. Checks will be made to ensure that Buyer can only delist their own sell order.
+
+Example (Delisting sellOrderId 1):
+```
+EventTokenMarketContract.unlist(1)
+```
+#### Purchase Token
+Buyers can purchase EventTokens by first checking the current price of tokens that they want to purchase then providing enough ethereum when they purchase tokens. How the price and purchase work will be explained in the Algorithm of Market below.
+
+Example (Checking the price of 5 EventTokens):
+```
+EventTokenMarketContract.checkCurrentPrice(5)
+```
+Example (Purchasing 5 EventTokens):
+```
+EventTokenMarketContract.purchaseTokens(5)
+```
+#### Algorithm of Market
+The selling of EventTokens are based on First Come First Serve basis. Whoever listed their EventTokens first, will have their tokens sold first. The price of EventTokens are based on 2 factor, the total supply of selling tokens in the market and the amount of tokens a Buyer purchase. Every additional 1 percent of total selling tokens a Buyer is purchasing, the price of each token will be increased by 10,000 wei starting from the base price of 50,000 wei. This will ensure that when demand of EventToken is high, price of EventToken will be high. For example, if there is only 1 EventToken to sell and a Buyer wants to purchase that EventToken, the price will be 50,000 + 99 * 10,000 (1% below will be charged by the base price only thus 99 percent is the additional charge). With this logic, when selling quantity of market is low, the price will be high thus Buyers will want to sell when quantity is low and purchase when selling quantity is high. When we factor in to the demand for a popular concert, Buyers might want to use their tokens thus selling quantity will be low and demand for the tokens will be high which result in high price. Similarly if the demand is low, price of EventToken will be subjected mainly to the base price if there is a huge amount of EventTokens being sold.
+
+Although a Buyer can possibly keep the purchase price of EventTokens to be low by continuously purchasing 1% and below of the total sell quantity, other Buyers who will urgently get EventsTokens can purchase with the higher price, resulting in Buyers not attaining enough tokens for bid and potentially buying tokens for nothing.
+
+EventTokenMarket tries to prevent foulplay by not allowing Buyers to choose who they sell their EventTokens to or who they purchase their EventTokens from. As Buyers are also unable to set their own price for their EventTokens, it is unlikely they are able to manupilate the market too.
