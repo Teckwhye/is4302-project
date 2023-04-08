@@ -58,7 +58,10 @@ Revenue source from:
 * absorbing the deposit submitted by seller at the start of the event for unsuccessful events.
 * gaining commission fees by providing the `TokenMarket.sol` for transaction of tokens used for biddings.
 
-### Challenges & Assumptions
+### Assumptions
+
+The following points mentioned below are the assumptions made for our application
+
 * The oracle is the `Account.sol` contract and other accounts that `Account.sol` certifies. These parties are assumed to be trusted. The detailed explanation on the implementation is mentioned under [Account Validation](#account-validation) section.
 * We assume that the gas fees incurred during transactions are negligible.
 
