@@ -21,4 +21,13 @@ contract("Event", function (accounts) {
         const title = await eventInstance.getEventTitle(latestEventId);
         await assert.equal("Title 0", title, "Failed to create event");
     });
+
+    it("Unable to create event if supplied with invalid date and time", async () => {
+        await truffleAssert.reverts(
+            eventInstance.createEvent("Title 0", "Venue 0", 2020, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1]}),
+            "Invalid Date and Time"
+        );
+    });
+
+
 })
