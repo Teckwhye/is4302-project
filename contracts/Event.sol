@@ -49,7 +49,7 @@ contract Event {
 
     // modifier to ensure eventId is valid
     modifier validEventId(uint256 eventId) {
-        require(eventId < numEvents);
+        require(eventId < numEvents, "Invalid eventId");
         _;
     }
 
