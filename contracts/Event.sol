@@ -49,7 +49,7 @@ contract Event {
 
     // modifier to ensure eventId is valid
     modifier validEventId(uint256 eventId) {
-        require(eventId < numEvents);
+        require(eventId < numEvents, "Invalid eventId");
         _;
     }
 
@@ -244,6 +244,22 @@ contract Event {
         return numEvents - 1;
     }
 
-   
+   /**
+     * Obtain enum value of a event state
+     *
+     * returns sellerEventEnd state
+     */
+    function getSellerEventEndState() public pure returns (eventState state) {
+        return eventState.sellerEventEnd;
+    }
+
+    /**
+     * Obtain enum value of a event state
+     *
+     * returns platformEventEnd state
+     */
+    function getPlatformEventEnd() public pure returns (eventState state) {
+        return eventState.platformEventEnd;
+    }
 }
 
