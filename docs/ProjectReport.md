@@ -1,7 +1,7 @@
 # Architecture & Design document
 
 ## Link to github code
-
+[https://github.com/AY2223-IS4302-G18/is4302-project](https://github.com/AY2223-IS4302-G18/is4302-project)
 
 ## Group members:
 
@@ -13,6 +13,15 @@
 | Teo Chin Kai Remus| A0217148E |
 | Teo Phing Huei, Aeron | A0225860E |
 
+## Contents
+
+* [Introduction](#introduction)
+* [Glossary](#glossary)
+* [Business Model](#business-model)
+    * [Stakeholder benefits](#stakeholder-benefits)
+* [Architecture](#architecture)
+* [Implementation](#implementation) 
+
 ## Introduction
 
 The purpose of this project is to leverage on cutting-edge capabilities of blockchain technology to effectively tackle the problem of scalping in the context of popular events. We aim to utilise the blockchain technology to create a secure, transparent, and decentralized system that helps event organisers, ticketing agencies and consumers to effectively manage the sale and distribution of tickets without unfair competition.
@@ -23,25 +32,41 @@ The purpose of this project is to leverage on cutting-edge capabilities of block
 | -- | -- |
 | Buyer | User that purchases event tickets on the platform |
 | Seller | User that lists events on the platform |
+| Tokens | Currency for the platform that is created using ERC20 |
+
+<div style="page-break-after: always;"></div>
 
 ## Business Model
 
-The current challenges with the ticket sale systems are the existence of scalpers that benefits from the traditional ticketing sale system and the lack of authenticity and accountability of tickets. Even though these challenges are not completely preventable using blockchain, the team still sees the potential benefits of deploying such application of blockchain. For instance, the implementation of priority system to reduce the opportunities for scalpers from benefitting and provide more transparency of information from the verification of organisations to the transaction of tickets. 
+The current challenges with the ticket sale systems are the existence of scalpers that benefits from the traditional ticketing sale system and the lack of authenticity and accountability of tickets. Even though these challenges are not completely preventable using blockchain, the team still sees the potential benefits of deploying such application of blockchain. For instance, mechanisms were introduced to reduce the opportunities for scalpers from benefitting such as a bidding system, placing a bulk purchase limit and prevention of buyer-to-buyer ticket transfer. This also provide more transparency of information from the verification of organisations to the transaction of each ticket. Moreover, this platform serves as a central platform that removes the involvement of a intermediary ticket retailers when setting up an event. Ethereum (ETH) is used for purchasing tickets upon a successful bid. The platform has also implemented a digital currency called **EventTokens** for buyers to bid for tickets. A token market platform has also been implemented for buyers to sell or buy tokens among themselves. 
 
 ### Stakeholder benefits
 
-As a buyer, 
+As a **Buyer**:
+* Reduced unfair competition with scalpers using the implemented [ticket bidding system](#ticket-bidding) using tokens and by limiting the number of tickets that can be purchased for each account.
+* Transparency in the entire process from viewing an event to transaction of tickets. 
+* Guaranteed refund of ETH in the event of fraduluent event listings after purchasing tickets.
+* Increased accessibility to all events with a centralised event listing platform. 
 
-## Contents
+As a **Seller**:
+* Potential increase in sales revenue with event listed on a centralised platform.
+* Lower interest fees of 5% as compared to traditional ticket retailers that collect 15-20% depending on the scale of the event.
 
-* [Architecture](#architecture)
-* [Implementation](#implementation) 
+As the **Platform** owner:
+Revenue source from:
+* gaining 5% commission fees for each successful event.
+* absorbing the deposit submitted by seller at the start of the event for unsuccessful events.
+* gaining commission fees by providing the `TokenMarket.sol` for transaction of tokens used for biddings.
+
+### Challenges & Assumptions
+* The oracle is the `Account.sol` contract and other accounts that `Account.sol` certifies. These parties are assumed to be trusted. The detailed explanation on the implementation is mentioned under [Account Validation](#account-validation) section.
+* We assume that the gas fees incurred during transactions are negligible.
 
 ## Architecture
 
 ![ArchitectureDiagram](diagrams/diagram_images/ArchitectureDiagram.png)
 
-An overview of the main components and how different stakeholders and contracts intereact is explained in detail below.
+An overview of the main components and how different stakeholders and contracts interact is explained in detail below.
 
 `Platform.sol` is the main contract that Sellers or Buyers will interact with.
 
@@ -55,6 +80,8 @@ The main capabilities of `Platform.sol` is to:
 * `Event.sol` : creation and storing of the event information & creation of tickets through `Ticket.sol`.
 
 `EventTokenMarket.sol` along with `EventTokenMarketAlgorithm.sol` are the contracts where buyers can trade tokens that will be used during the bidding ticket process.
+
+The team exercises data segregation and separation with these implementation of different contracts that serves their individual purposes.
 
 ## Implementation
 
@@ -122,9 +149,9 @@ PlatformContract.closeBidding(0)
 #### Account Management
 
 `Account.Sol` stores three main information for accounts.
-1) **state** : whether an account is verified or not
-2) **verifier** : the certifier that verified the account
-3) **certified** : whether an account is certified to verify other address
+* **state** : whether an account is verified or not
+* **verifier** : the certifier that verified the account
+* **certified** : whether an account is certified to verify other address
 
 These information are stored in a mapping where the key is the address and the value would be the account object.
 
@@ -141,7 +168,7 @@ The team assumes that `Account.sol` is trusted and the accounts certified by `Ac
 ```
 AccountContract.certifyAccount(address addr)
 ```
-Example (Certifying account[1]):
+Example (Certifying *account[1]*):
 ```
 AccountContract.certifyAccount(address(account[1]))
 ```
@@ -151,7 +178,7 @@ After `Account.sol` certifies a set of accounts to provide them with the respons
 ```
 AccountContract.verifyAccount(address addr)
 ```
-Example (Verifying account[2]):
+Example (Verifying *account[2]*):
 ```
 AccountContract.verifyAccount(address(account[2]))
 ```
