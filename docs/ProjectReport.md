@@ -56,7 +56,7 @@ As the **Platform** owner:
 Revenue source from:
 * gaining 5% commission fees for each successful event.
 * absorbing the deposit submitted by seller at the start of the event for unsuccessful events.
-* gaining commission fees by providing the `TokenMarket.sol` for transaction of tokens used for biddings.
+* gaining commission fees by providing the `EventTokenMarket.sol` for transaction of tokens used for biddings.
 
 ### Assumptions
 
