@@ -328,7 +328,7 @@ contract("Platform", function (accounts) {
         let updateBid1 = await platformInstance.updateBid(latestEventId, 6, {from: accounts[3]});
         truffleAssert.eventEmitted(updateBid1, "BidUpdate");
 
-        // Ensure that platform EventToken amount is consistent
+        // Ensure that account EventToken amount is consistent
         const acc2token1 = new BigNumber(await eventTokenInstance.checkEventToken({from: accounts[2]}));
         await assert(acc2token1.isEqualTo(BigNumber(0)), "EventToken not burned");
         const acc3token1 = new BigNumber(await eventTokenInstance.checkEventToken({from: accounts[3]}));
