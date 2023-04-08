@@ -86,27 +86,89 @@ contract("Platform", function (accounts) {
         await assert.strictEqual(eventTitle.toString(),"Harry Styles concert","Event not listed");
     });
 
-    it("List Event", async () => {
-        await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
-        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
-        latestEventId = (await eventInstance.getLatestEventId()).toNumber();
-        const title = await eventInstance.getEventTitle(latestEventId);
-        await assert("Title 0", title, "Failed to create event");
-    });
+    it ("Incorrect Commence Bidding", async () => {
+        // Not seller of event
+        await truffleAssert.reverts(
+            platformInstance.commenceBidding(latestEventId, {from: accounts[9]}),
+            "Only seller can commence bidding"
+        );
+
+        // Invalid EventId
+        await truffleAssert.reverts(
+            platformInstance.commenceBidding(999, {from: accounts[1]}),
+            "Invalid eventId"
+        );
+    })
+
+    it ("Incorrect sequence of bidding", async () => {
+        // Cant bid before bidding commenced
+        await truffleAssert.reverts(
+            platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth}),
+            "Event not open for bidding"
+        );
+    })
 
     it("Commence Bidding", async () => {
         let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
         truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
+
+        // enum bidState[1]
+        let bidState = await eventInstance.getEventState(latestEventId);
+        await assert.equal(bidState, 1, "Bidding not commenced");
     });
+
+    it ("Incorrect Bid Placing", async () => {
+        // Quantity 0
+        await truffleAssert.reverts(
+            platformInstance.placeBid(latestEventId, 0, 0, {from: accounts[2], value: oneEth}),
+            "Quantity of tickets must be at least 1"
+        );
+
+        // Quantity > 4
+        await truffleAssert.reverts(
+            platformInstance.placeBid(latestEventId, 5, 0, {from: accounts[2], value: oneEth}),
+            "You have passed the maximum bulk purchase limit"
+        );
+
+        // Insufficient ETH
+        await truffleAssert.reverts(
+            platformInstance.placeBid(latestEventId, 4, 0, {from: accounts[2], value: 1}),
+            "Buyer has insufficient ETH"
+        );
+
+        // Insufficient EventTokens
+        await truffleAssert.reverts(
+            platformInstance.placeBid(latestEventId, 4, 50, {from: accounts[2], value: oneEth}),
+            "Buyer has insufficient EventTokens"
+        );
+    })
 
     it("Place Bidding", async () => {
         let bidPlaced = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth});
         truffleAssert.eventEmitted(bidPlaced, "BidPlaced");
     });
 
+    it ("Incorrect Close Bidding", async () => {
+        // Not seller of event
+        await truffleAssert.reverts(
+            platformInstance.closeBidding(latestEventId, {from: accounts[9]}),
+            "Only seller can close bidding"
+        );
+
+        // Invalid EventId
+        await truffleAssert.reverts(
+            platformInstance.commenceBidding(999, {from: accounts[1]}),
+            "Invalid eventId"
+        );
+    })
+
     it("Close Bidding", async () => {
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
         truffleAssert.eventEmitted(bidClosed, "BidClosed");
+
+        // enum bidState[2]
+        let bidState = await eventInstance.getEventState(latestEventId);
+        await assert.equal(bidState, 2, "Bidding not closed");
     });
 
     it("Buy Ticket", async () => {
@@ -129,16 +191,34 @@ contract("Platform", function (accounts) {
         );
     });
 
-    it("Successful Payback to buyer", async () => {
-        // let buyTicketProcess = await platformInstance.buyTickets(1, 3, 300, {from: accounts[1], value: 1000})
-        // expectedReturn = 100;
-        // let balance = await web3.eth.getBalance(accounts[0]);
-        // console.log("this is the balance:",balance);
-        // assert.strictEqual(balance , expectedReturn, "Incorrect payback");
+    it("Return ETH back to buyer if msg.value > priceOfTickets", async () => {
+        // Listing of event with 5 tickets
+        await accountInstance.verifyAccount(accounts[1], {from: accounts[0]});
+        await platformInstance.listEvent("Title 0", "Venue 0", 2024, 3, 11, 12, 30, 0, 5, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        latestEventId = (await eventInstance.getLatestEventId()).toNumber();
+        const title = await eventInstance.getEventTitle(latestEventId);
+        await assert("Title 0", title, "Failed to create event");
 
-        // not the best way
-        let buyTicketProcess = await platformInstance.buyTickets(latestEventId, 3, {from: accounts[3], value: oneEth.dividedBy(4)})
-        truffleAssert.eventEmitted(buyTicketProcess, 'BuyTicket');
+        // Commence bidding
+        let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidCommenced, "BidCommenced");
+
+        // Close bidding
+        let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
+        truffleAssert.eventEmitted(bidClosed, "BidClosed");
+
+        // Buy ticket
+        let initialbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
+        let buyTicket = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth});
+        truffleAssert.eventEmitted(buyTicket, "BuyTicket");
+        let gasUsed = new BigNumber(buyTicket.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(buyTicket.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+
+        // Ensure ETH is returned
+        let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[3]));
+        let priceOfTicket = new BigNumber(await eventInstance.getEventTicketPrice(latestEventId));
+        await assert(finalbalance.isEqualTo(initialbalance.minus(gasPrice.multipliedBy(gasUsed)).minus(priceOfTicket)), "Did not return exceeded ETH back to buyer");
     });
 
     it("Test Priority System", async () => {
@@ -212,10 +292,10 @@ contract("Platform", function (accounts) {
 
     it("Test Updating of Bid", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 2", "Venue 2", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
-        await assert("Title 1", title, "Failed to create event");
+        await assert("Title 2", title, "Failed to create event");
 
         // Commence bidding
         let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
@@ -270,10 +350,10 @@ contract("Platform", function (accounts) {
 
     it("Test Unsuccessful Bid Return ETH", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 3", "Venue 3", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
-        await assert("Title 1", title, "Failed to create event");
+        await assert("Title 3", title, "Failed to create event");
 
         // Commence bidding
         let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
@@ -314,10 +394,10 @@ contract("Platform", function (accounts) {
 
     it("Test Successful Bid -> Refund Ticket -> Buy Ticket", async () => {
         // Listing of event with 1 ticket
-        await platformInstance.listEvent("Title 1", "Venue 1", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
+        await platformInstance.listEvent("Title 4", "Venue 4", 2024, 3, 11, 12, 30, 0, 1, 20, accounts[1], {from: accounts[1], value: oneEth.multipliedBy(4)});
         let latestEventId = (await eventInstance.getLatestEventId()).toNumber();
         const title = await eventInstance.getEventTitle(latestEventId);
-        await assert("Title 1", title, "Failed to create event");
+        await assert("Title 4", title, "Failed to create event");
 
         // Commence bidding
         let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
