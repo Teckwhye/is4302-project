@@ -8,7 +8,7 @@
 | Member Name | Admin Number |
 | ---|---|
 | Han Jun Ding | A0221230E |
-| Sean Phang | |
+| Sean Phang | A0217206N |
 | Tan Teck Hwee | A0217207M |
 | Teo Chin Kai Remus| A0217148E |
 | Teo Phing Huei, Aeron | A0225860E |
@@ -195,6 +195,17 @@ PlatformContract.placeBid(0, 4, 5)
 
 Although one account can only place a bid for a specific event once, there is an updateBid function available for buyers to update their biddings.  
 
+#### Update Bidding
+The `updateBid` function allows for users to update any bids that they have placed with a higher bid.
+
+The following conditions must be met for a buyer to successfully update their bid to an event:
+1. The event has to be open for bidding, with the event state of `bidding`
+2. The user has to have already made a bid prior to attempting to update their bid
+3. The new bid being placed has to be of a higher value then the previous bid
+4. The user has to have enough tokens to cover the update cost
+
+When this function is called, the required tokens are first burned. The old bid that the user had placed is then deleted and the new bids are stored.
+
 #### Close Bidding
 Buyers can continue to place and update bids up until the seller decides to close the bidding. On closure, our algorithm will automatically distribute tickets to successful bidders as well as return ETH back to unsuccesful bidders.
 
@@ -227,6 +238,13 @@ The following conditions must be met for a buyer to successfully buy tickets to 
 4. Buyer has sufficient ETH to buy the desired amount of tickets
 
 #### Ticket refund
+The `refundTicket` function allows buyers to refund purchased tickets back to the platform for a penalty.
+
+The following conditions must be met for a buyer to successfully refund tickets of an event:
+1. The event must be an ongoing valid event with the event state of `buyAndRefund`
+2. The refunded ticket has to have already been transfered to the platform
+
+If these conditions are met, the ticket will be returned to the platform and the refunding user will be returned eth equivalent to half of the ticket purchase price.
 
 ### Event end
 For simplicity of this project, the team only considered 2 possible ending outcomes for an event:
