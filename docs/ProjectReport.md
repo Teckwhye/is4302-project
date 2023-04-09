@@ -1,5 +1,8 @@
 # Architecture & Design document
 
+## Link to github code
+[https://github.com/AY2223-IS4302-G18/is4302-project](https://github.com/AY2223-IS4302-G18/is4302-project)
+
 ## Group members:
 
 | Member Name | Admin Number |
@@ -10,44 +13,78 @@
 | Teo Chin Kai Remus| A0217148E |
 | Teo Phing Huei, Aeron | A0225860E |
 
+## Contents
+
+* [Introduction](#introduction)
+* [Glossary](#glossary)
+* [Business Model](#business-model)
+    * [Stakeholder benefits](#stakeholder-benefits)
+* [Architecture](#architecture)
+* [Implementation](#implementation) 
+
 ## Introduction
 
-The purpose of this project is to leverage on cutting-edge capabilities of blockchain technology to effectively tackle the problem of scalping in the context of popular events. We aim to utilise the blockchain technology to create a secure, transparent, and decentralized system that helps event organizers, ticketing agencies and consumers to effectively manage the sale and distribution of tickets without unfair competition.
-
-## Motivation
-
-The current challenges with the ticket sale systems are the existence of scalpers that benefits from the traditional ticketing sale system and the lack of authenticity and accountability of tickets. Even though these challenges are not completely preventable using blockchain, the team still sees the potential benefits of deploying such application of blockchain. For instance, the implementation of priority system to reduce the opportunities for scalpers from benefitting and provide more transparency of information from the verification of organisations to the transaction of tickets. 
+The purpose of this project is to leverage on cutting-edge capabilities of blockchain technology to effectively tackle the problem of scalping in the context of popular events. We aim to utilise the blockchain technology to create a secure, transparent, and decentralized system that helps event organisers, ticketing agencies and consumers to effectively manage the sale and distribution of tickets without unfair competition.
 
 ## Glossary
 
 | Name | Explanation |
 | -- | -- |
 | Buyer | User that purchases event tickets on the platform |
-| Organiser | User that lists events on the platform |
+| Seller | User that lists events on the platform |
+| Tokens | Currency for the platform that is created using ERC20 |
 
-## Contents
+<div style="page-break-after: always;"></div>
 
-* [Architecture](#architecture)
-* [Implementation](#implementation) 
+## Business Model
+
+The current challenges with the ticket sale systems are the existence of scalpers that benefits from the traditional ticketing sale system and the lack of authenticity and accountability of tickets. Even though these challenges are not completely preventable using blockchain, the team still sees the potential benefits of deploying such application of blockchain. For instance, mechanisms were introduced to reduce the opportunities for scalpers from benefitting such as a bidding system, placing a bulk purchase limit and prevention of buyer-to-buyer ticket transfer. This also provide more transparency of information from the verification of organisations to the transaction of each ticket. Moreover, this platform serves as a central platform that removes the involvement of a intermediary ticket retailers when setting up an event. Ethereum (ETH) is used for purchasing tickets upon a successful bid. The platform has also implemented a digital currency called **EventTokens** for buyers to bid for tickets. A token market platform has also been implemented for buyers to sell or buy tokens among themselves. 
+
+### Stakeholder benefits
+
+As a **Buyer**:
+* Reduced unfair competition with scalpers using the implemented [ticket bidding system](#ticket-bidding) using tokens and by limiting the number of tickets that can be purchased for each account.
+* Transparency in the entire process from viewing an event to transaction of tickets. 
+* Guaranteed refund of ETH in the event of fraduluent event listings after purchasing tickets.
+* Increased accessibility to all events with a centralised event listing platform. 
+
+As a **Seller**:
+* Potential increase in sales revenue with event listed on a centralised platform.
+* Lower interest fees of 5% as compared to traditional ticket retailers that collect 15-20% depending on the scale of the event.
+
+As the **Platform** owner:
+Revenue source from:
+* gaining 5% commission fees for each successful event.
+* absorbing the deposit submitted by seller at the start of the event for unsuccessful events.
+* gaining commission fees by providing the `EventTokenMarket.sol` for transaction of tokens used for biddings.
+
+### Assumptions
+
+The following points mentioned below are the assumptions made for our application
+
+* The oracle is the `Account.sol` contract and other accounts that `Account.sol` certifies. These parties are assumed to be trusted. The detailed explanation on the implementation is mentioned under [Account Validation](#account-validation) section.
+* We assume that the gas fees incurred during transactions are negligible.
 
 ## Architecture
 
 ![ArchitectureDiagram](diagrams/diagram_images/ArchitectureDiagram.png)
 
-An overview of the main components and how different stakeholders and contracts intereact is explained in detail below.
+An overview of the main components and how different stakeholders and contracts interact is explained in detail below.
 
-`Platform.sol` is the main contract that Organisers or Buyers will interact with.
+`Platform.sol` is the main contract that Sellers or Buyers will interact with.
 
 The main capabilities of `Platform.sol` is to:
-* Allow Organisers to list events on the platform.
+* Allow Sellers to list events on the platform.
 * Allow Buyers to bid after an event is listed and buy tickets upon successful bidding.
 
 `Platform.sol` interacts with other contracts such as:
 
-* `Account.sol` : conducts verification on whether an Organiser is a verified on the Platform to list events. It also certifies a set of trusted accounts to provide rights for them to verify Organisers.
+* `Account.sol` : conducts verification on whether an Seller is a verified on the Platform to list events. It also certifies a set of trusted accounts to provide rights for them to verify Sellers.
 * `Event.sol` : creation and storing of the event information & creation of tickets through `Ticket.sol`.
 
-`EventTokenMarket.sol` along with `EventTokenMarketAlgorithm` are the contracts where buyers can trade tokens that will be used during the bidding ticket process.
+`EventTokenMarket.sol` along with `EventTokenMarketAlgorithm.sol` are the contracts where buyers can trade tokens that will be used during the bidding ticket process.
+
+The team exercises data segregation and separation with these implementation of different contracts that serves their individual purposes.
 
 ## Implementation
 
