@@ -1,6 +1,6 @@
 # Architecture & Design document
 
-## Link to GitHub Code
+## Link to github code
 [https://github.com/AY2223-IS4302-G18/is4302-project](https://github.com/AY2223-IS4302-G18/is4302-project)
 
 ## Group members:
@@ -231,6 +231,10 @@ Although one account can only place a bid for a specific event once, there is an
 #### Update Bidding
 The `updateBid` function allows for users to update any bids that they have placed with a higher bid.
 
+```
+PlatformContract.updateBid(uint256 eventId, uint256 tokenBid)
+```
+
 The following conditions must be met for a buyer to successfully update their bid to an event:
 1. The event has to be open for bidding, with the event state of `bidding`
 2. The user has to have already made a bid prior to attempting to update their bid
@@ -238,6 +242,12 @@ The following conditions must be met for a buyer to successfully update their bi
 4. The user has to have enough tokens to cover the update cost
 
 When this function is called, the required tokens are first burned. The old bid that the user had placed is then deleted and the new bids are stored.
+
+Example (Updating bid for eventId 0 to a bid of 4 tokens):
+
+```
+PlatformContract.updateBid(0, 4)
+```
 
 #### Close Bidding
 Buyers can continue to place and update bids up until the seller decides to close the bidding. On closure, our algorithm will automatically distribute tickets to successful bidders as well as return ETH back to unsuccesful bidders.
@@ -270,14 +280,30 @@ The following conditions must be met for a buyer to successfully buy tickets to 
 3. Buyers can only buy tickets if there are still tickets available for sale.
 4. Buyer has sufficient ETH to buy the desired amount of tickets
 
+Example (Buying 1 ticket for eventId 0):
+
+```
+PlatformContract.buyTickets(0, 1)
+```
+
 #### Ticket refund
 The `refundTicket` function allows buyers to refund purchased tickets back to the platform for a penalty.
+
+```
+PlatformContract.refundTicket(uint256 ticketId)
+```
 
 The following conditions must be met for a buyer to successfully refund tickets of an event:
 1. The event must be an ongoing valid event with the event state of `buyAndRefund`
 2. The refunded ticket has to have already been transfered to the platform
 
 If these conditions are met, the ticket will be returned to the platform and the refunding user will be returned eth equivalent to half of the ticket purchase price.
+
+Example (Refunding ticket with ticketId of 5):
+
+```
+PlatformContract.refundTicket(5)
+```
 
 ### Event end
 For simplicity of this project, the team only considered 2 possible ending outcomes for an event:
