@@ -35,8 +35,8 @@ contract("EventToken", function (accounts) {
         );
     });
 
-    // Owner authorise platform to mint token
-    it("Authorise an address to run mint function of EventToken", async () => {
+    // Owner authorise platform
+    it("Authorise an address to run authorised function of EventToken", async () => {
         truffleAssert.eventEmitted(
             await eventTokenInstance.addAuthorisedAddress(platformInstance.address), 
             'NewAuthorisedAddress');
@@ -44,9 +44,11 @@ contract("EventToken", function (accounts) {
 
     });
     
-    // Platform mint token for accounts[2]
+    // Test mint token for accounts[2]
     it("Mint Event Token as authorised address", async () => {
         let totalSupplyBefore = await eventTokenInstance.getCurrentSupply({from: accounts[2]});
+        // Base price of tokens = 50,000
+        // Minting is based on 5% of ticket's price divided by 50,000 wei which in this example is 100 tokens
         await eventTokenInstance.mintToken(5000000, accounts[2]);
         let totalSupplyAfter = await eventTokenInstance.getCurrentSupply({from: accounts[2]});
         let totalSupplyAdded = totalSupplyAfter - totalSupplyBefore;
@@ -54,7 +56,7 @@ contract("EventToken", function (accounts) {
         assert.equal(totalSupplyAdded, 100);
     });
 
-    // Platform burn token for accounts[2]
+    // Burn token for accounts[2]
     it("Burn Event Token", async () => {
         let totalSupplyBefore = await eventTokenInstance.getCurrentSupply({from: accounts[2]});
         await eventTokenInstance.burnToken(100, accounts[2]);
@@ -184,7 +186,7 @@ contract("EventToken", function (accounts) {
     });
 
     // Account 4 succesfully purchase 30 tokens should work with both sellers
-    it("Purchase of 30 tokens from account[5]", async () => {
+    it("Purchase of 30 tokens from account[4]", async () => {
         let buyOrder = await eventTokenMarketInstance.checkCurrentPrice(30);
         // Check if algorithm price is correct as total 42% of the selling quantity is purchased (30/70)
         // Every addtional 1% of market will increase price of each token by 10,000 which first percent is only base price
