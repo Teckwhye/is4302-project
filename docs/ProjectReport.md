@@ -1,6 +1,6 @@
 # Architecture & Design document
 
-## Link to github code
+## Link to GitHub Code
 [https://github.com/AY2223-IS4302-G18/is4302-project](https://github.com/AY2223-IS4302-G18/is4302-project)
 
 ## Group members:
