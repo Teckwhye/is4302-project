@@ -1,6 +1,6 @@
 # Architecture & Design document
 
-## Link to github code
+## Link to GitHub Code
 [https://github.com/AY2223-IS4302-G18/is4302-project](https://github.com/AY2223-IS4302-G18/is4302-project)
 
 ## Group members:
@@ -38,14 +38,14 @@ The purpose of this project is to leverage on cutting-edge capabilities of block
 
 ## Business Model
 
-The current challenges with the ticket sale systems are the existence of scalpers that benefits from the traditional ticketing sale system and the lack of authenticity and accountability of tickets. Even though these challenges are not completely preventable using blockchain, the team still sees the potential benefits of deploying such application of blockchain. For instance, mechanisms were introduced to reduce the opportunities for scalpers from benefitting such as a bidding system, placing a bulk purchase limit and prevention of buyer-to-buyer ticket transfer. This also provide more transparency of information from the verification of organisations to the transaction of each ticket. Moreover, this platform serves as a central platform that removes the involvement of a intermediary ticket retailers when setting up an event. Ethereum (ETH) is used for purchasing tickets upon a successful bid. The platform has also implemented a digital currency called **EventTokens** for buyers to bid for tickets. A token market platform has also been implemented for buyers to sell or buy tokens among themselves. 
+The current challenges with the ticket sale systems are the existence of scalpers that benefits from the traditional ticketing sale system and the lack of authenticity and accountability of tickets. Even though these challenges are not completely preventable using blockchain, the team still sees the potential benefits of deploying such application of blockchain. For instance, mechanisms were introduced to reduce the opportunities for scalpers from benefiting such as a bidding system, placing a bulk purchase limit and prevention of buyer-to-buyer ticket transfer. This also provide more transparency of information from the verification of organisations to the transaction of each ticket. Moreover, this platform serves as a central platform that removes the involvement of a intermediary ticket retailers when setting up an event. Ethereum (ETH) is used for purchasing tickets upon a successful bid. The platform has also implemented a digital currency called **EventTokens** for buyers to bid for tickets. A token market platform has also been implemented for buyers to sell or buy tokens among themselves. 
 
 ### Stakeholder benefits
 
 As a **Buyer**:
 * Reduced unfair competition with scalpers using the implemented [ticket bidding system](#ticket-bidding) using tokens and by limiting the number of tickets that can be purchased for each account.
 * Transparency in the entire process from viewing an event to transaction of tickets. 
-* Guaranteed refund of ETH in the event of fraduluent event listings after purchasing tickets.
+* Guaranteed refund of ETH in the event of fraudulent event listings after purchasing tickets.
 * Increased accessibility to all events with a centralised event listing platform. 
 
 As a **Seller**:
@@ -107,7 +107,7 @@ This structure ensures ease of obtaining any account information. Moreover, any 
 
 The team assumes that `Account.sol` is trusted and the accounts certified by `Account.sol` are also trusted.
 
-`Account.sol` has the authoritity to determine whether an account is certified to conduct verification for an account. Only when an account is certified by `Account.sol`, the account can verify the authenticity of other accounts.
+`Account.sol` has the authority to determine whether an account is certified to conduct verification for an account. Only when an account is certified by `Account.sol`, the account can verify the authenticity of other accounts.
 
 ```
 AccountContract.certifyAccount(address addr)
@@ -129,12 +129,12 @@ AccountContract.verifyAccount(address(account[2]))
 
 An example scenario of the validation process will be as follows:
 1. `Account.sol` certifies *account[1]* that can verify other accounts. The trusted accounts will be the oracle.
-2. *account[2]* wants to list an event on the platform and has requested to be verified. *account[1]* can now conduct background checks on the authenticity of *acccount[2]*. This process will be done off-chain
+2. *account[2]* wants to list an event on the platform and has requested to be verified. *account[1]* can now conduct background checks on the authenticity of *account[2]*. This process will be done off-chain
 3. Upon successful verification, *account[1]* verifies *account[2]* and now *account[2]* can list on the platform.
 
 The team understand that this solution is not a full-proof solution to the oracle problem. This is due to `Account.sol` being a single point of failure and an account is also certified by only one certifier without any cross-checking.
 
-Improvements to this implementation would be implementing ASTRAEA with voting and certifying process. This involves multiple stakeholders in the validation process and ensures that the entire voting process is fair. Stakeholders will also be incentivised or penalised depending on their validation result and whether they are a voter or certifer. However, this idea would be pushed for future developments due to time constraints.
+Improvements to this implementation would be implementing ASTRAEA with voting and certifying process. This involves multiple stakeholders in the validation process and ensures that the entire voting process is fair. Stakeholders will also be incentivised or penalised depending on their validation result and whether they are a voter or certifier. However, this idea would be pushed for future developments due to time constraints.
 
 ### Event & Ticket
 Our application follows the Object Oriented Programming methodology for storage of necessary data objects in `Event.sol` and `Ticket.sol` where each define the structure of Event and Ticket respectively. 
@@ -177,7 +177,7 @@ Our application adopts a state machine model to represent different behavioural 
 2. Bidding Phase
     * An authorised seller can commence the start of the bidding phase for a listed event which will allow buyers to bid for tickets.
     * During this phase, buyers can place & update bids for event tickets. ETH is used to pay for the price of tickets which is fixed while EventTokens are used for bidding of tickets.
-    * The authorised seller can decide when to close the bidding phase. When executed, the smart contract will perform an algorithm to distribute tickets in a way such that priority is given to bidders that bidded with more EventTokens and automatically transfer tickets to successful bidders as well as return ETH back to unsuccessful bidders.
+    * The authorised seller can decide when to close the bidding phase. When executed, the smart contract will perform an algorithm to distribute tickets in such a way that priority is given to bidders who had placed higher EventToken bids, automatically transferring tickets to successful bidders as well as returning ETH back to unsuccessful bidders.
 3. Buying & Refund Phase 
     * In this phase, buyers can perform normal purchasing of leftover available tickets and refunding of tickets is also possible through the platform. 
 4. Seller End Phase
@@ -250,11 +250,11 @@ PlatformContract.updateBid(0, 4)
 ```
 
 #### Close Bidding
-Buyers can continue to place and update bids up until the seller decides to close the bidding. On closure, our algorithm will automatically distribute tickets to successful bidders as well as return ETH back to unsuccesful bidders.
+Buyers can continue to place and update bids up until the seller decides to close the bidding. On closure, our algorithm will automatically distribute tickets to successful bidders as well as return ETH back to unsuccessful bidders.
 
 The algorithm logic for ticket distribution is as follows:
 1. Starting from the highest token bid, the algorithm transfer tickets to bidders, breaking tie by first come first serve if bidders have the same token bid amount.
-2. The algorithm will continue transfering tickets until all tickets left for event have been given out and will return ETH to unsucessful bidders or continue transfering tickets until all bidders have received tickets such that there are leftover tickets.
+2. The algorithm will continue transferring tickets until all tickets left for event have been given out and will return ETH to unsuccessful bidders or continue transferring tickets until all bidders have received tickets such that there are leftover tickets.
 3. Update tickets left for event
 4. Change event state to allow buying and refunding of tickets.
 
@@ -295,7 +295,7 @@ PlatformContract.refundTicket(uint256 ticketId)
 
 The following conditions must be met for a buyer to successfully refund tickets of an event:
 1. The event must be an ongoing valid event with the event state of `buyAndRefund`
-2. The refunded ticket has to have already been transfered to the platform
+2. The refunded ticket has to have already been transferred to the platform
 
 If these conditions are met, the ticket will be returned to the platform and the refunding user will be returned eth equivalent to half of the ticket purchase price.
 
@@ -309,7 +309,7 @@ PlatformContract.refundTicket(5)
 For simplicity of this project, the team only considered 2 possible ending outcomes for an event:
 1. Successful event 
 
-    For an event outcome to be considered 'successful', the actual event must have occured/ carried out successfully. After which, the seller is able to call *sellerEndEvent(uint256 eventId)* function. This function changes the event state to "sellerEventEnd" and informs the contract owner that event has ended successfully. Contract owner can then call *endSuccessfulEvent(uint256 eventId)* function to release the ticket sales and deposits to the seller. 
+    For an event outcome to be considered 'successful', the actual event must have occurred/ carried out successfully. After which, the seller is able to call *sellerEndEvent(uint256 eventId)* function. This function changes the event state to "sellerEventEnd" and informs the contract owner that event has ended successfully. Contract owner can then call *endSuccessfulEvent(uint256 eventId)* function to release the ticket sales and deposits to the seller. 
 
 2. Unsuccessful event
 
@@ -321,12 +321,12 @@ Note: It is assumed here that the contract owner will be honest in verifying the
 
 ### Tokenomics
 #### Token Supply and Distribution
-The total supply of EventToken is not capped as we believed the high usage of it (Which the token will be burned when used) will ensure the value of the token. EventToken will be distributed when Buyers attended a successful event as defined above and cannot be minted directly. EventToken are only minted when there is a successful event and it will be awarded to those that attend the event. The amount distributed is determined by 5 percent of event ticket price divided by 50,000 wei. For example, an event ticket that cost 1,000,000 wei will allow a buyer to attain 1 EventToken as 5 percent of 1,000,000 is 50,000 which divded by 50,000 will be 1.
+The total supply of EventToken is not capped as we believed the high usage of it (Which the token will be burned when used) will ensure the value of the token. EventToken will be distributed when Buyers attended a successful event as defined above and cannot be minted directly. EventToken are only minted when there is a successful event and it will be awarded to those that attend the event. The amount distributed is determined by 5 percent of event ticket price divided by 50,000 wei. For example, an event ticket that cost 1,000,000 wei will allow a buyer to attain 1 EventToken as 5 percent of 1,000,000 is 50,000 which divided by 50,000 will be 1.
 
 #### Token Utility
 EventToken can only be utilised in bidding to gain priority in purchasing ticket. EventToken cannot be transfer from Buyer to Buyer and can only be traded on EventTokenMarket. The main idea of trading the EventToken will be to either gain more tokens for bidding by purchasing them or to earn Ethereum by selling them.
 
-#### Token Value and Delation
+#### Token Value and Deletion
 EventToken value is based on popularity of events and the demand for event tickets. If there is a demand for event tickets, more EventToken will be required for buyers to ensure that they have a priority in purchasing tickets. When a Buyer requires more EventToken, it can be purchased on EventTokenMarket if only another person have listed a EventToken to sell. The price of the EventToken is then decided by the algorithm of the market to ensure no foulplay which will be explained in the section EventTokenMarket below. To ensure that the amount of circulating tokens are not infinite, EventTokens will be burned when used in bidding which also means that no refund will be given for biddings.
 
 ### EventTokenMarket
@@ -361,4 +361,4 @@ The selling of EventTokens are based on First Come First Serve basis. Whoever li
 
 Although a Buyer can possibly keep the purchase price of EventTokens to be low by continuously purchasing 1% and below of the total sell quantity, other Buyers who will urgently get EventsTokens can purchase with the higher price, resulting in Buyers not attaining enough tokens for bid and potentially buying tokens for nothing.
 
-EventTokenMarket tries to prevent foulplay by not allowing Buyers to choose who they sell their EventTokens to or who they purchase their EventTokens from. As Buyers are also unable to set their own price for their EventTokens, it is unlikely they are able to manupilate the market too.
+EventTokenMarket tries to prevent foulplay by not allowing Buyers to choose who they sell their EventTokens to or who they purchase their EventTokens from. As Buyers are also unable to set their own price for their EventTokens, it is unlikely they are able to manipulate the market too.
