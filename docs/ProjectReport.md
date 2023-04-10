@@ -361,4 +361,8 @@ The selling of EventTokens are based on First Come First Serve basis. Whoever li
 
 Although a Buyer can possibly keep the purchase price of EventTokens to be low by continuously purchasing 1% and below of the total sell quantity, other Buyers who will urgently get EventsTokens can purchase with the higher price, resulting in Buyers not attaining enough tokens for bid and potentially buying tokens for nothing.
 
+<<<<<<< HEAD
 EventTokenMarket tries to prevent foulplay by not allowing Buyers to choose who they sell their EventTokens to or who they purchase their EventTokens from. As Buyers are also unable to set their own price for their EventTokens, it is unlikely they are able to manipulate the market too.
+=======
+EventTokenMarket tries to prevent foulplay by not allowing Buyers to choose who they sell their EventTokens to or who they purchase their EventTokens from. As Buyers are also unable to set their own price for their EventTokens, it is unlikely they are able to manupilate the market too.
+>>>>>>> Doc_examples
