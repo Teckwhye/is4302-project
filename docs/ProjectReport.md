@@ -1,6 +1,6 @@
 # Architecture & Design document
 
-## Link to github code
+## Link to GitHub Code
 [https://github.com/AY2223-IS4302-G18/is4302-project](https://github.com/AY2223-IS4302-G18/is4302-project)
 
 ## Group members:
@@ -136,8 +136,41 @@ The team understand that this solution is not a full-proof solution to the oracl
 
 Improvements to this implementation would be implementing ASTRAEA with voting and certifying process. This involves multiple stakeholders in the validation process and ensures that the entire voting process is fair. Stakeholders will also be incentivised or penalised depending on their validation result and whether they are a voter or certifer. However, this idea would be pushed for future developments due to time constraints.
 
+### Event & Ticket
+Our application follows the Object Oriented Programming methodology for storage of necessary data objects in `Event.sol` and `Ticket.sol` where each define the structure of Event and Ticket respectively. 
+
+The Event data structure stores important details about an event that a buyer would look for when deciding to attend an event. As such, parameters like title, venue, dateAndTime, capacity, ticketsLeft and priceOfTicket are included. It also contains auxiliary data such as seller address, eventState and firstTicketId for purpose of data processing and management in the application. 
+
+```
+struct eventObj {
+    string title;               
+    string venue;               
+    uint256 dateAndTime;
+    uint256 capacity;
+    uint256 ticketsLeft;
+    uint256 priceOfTicket;
+    address seller;
+    eventState state;
+    uint256 firstTicketId;
+}
+```
+
+The Ticket data structure stores important information of a ticket such as owner, prevOwner, eventId, price, category and seatId. Ownership of tickets are easily verifiable through the owner field and ticket are loosely coupled with an event through the eventId field. More specific details about the individual ticket such as category and seatId are also included.
+```
+struct ticket {
+    address owner;
+    address prevOwner;
+    uint256 eventId; 
+    uint256 price;
+    category cat;
+    uint256 seatId;
+}
+```
+
+The relevant getter and setter functions for these information are included for ease of query and modification.
+
 ### Ticket Sale System
- Our application adopts a state machine model to represent different behavioural contract stages and use state transitions to control the execution flow of the program. There are 5 main phases in our ticketing sales system that every event listed on the platform will undergo.This ticket sale system implementation is integrated in `Platform.sol`.
+Our application adopts a state machine model to represent different behavioural contract stages and use state transitions to control the execution flow of the program. There are 5 main phases in our ticketing sales system that every event listed on the platform will undergo.This ticket sale system implementation is integrated in `Platform.sol`.
 
 1. Initial Phase
     * When an authorised seller lists an event on the platform, the event will be initialized to an initial state which implies that ticket sale is not available yet.
