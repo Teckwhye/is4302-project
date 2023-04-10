@@ -33,13 +33,13 @@ contract Ticket {
 
     // modifier to ensure a function is callable only by its owner    
     modifier ownerOnly(uint256 ticketId) {
-        require(tickets[ticketId].owner == msg.sender);
+        require(tickets[ticketId].owner == msg.sender, "Not owner of ticket");
         _;
     }
 
     // modifier to ensure ticketId is valid
     modifier validTicketId(uint256 ticketId) {
-        require(ticketId < numTickets);
+        require(ticketId < numTickets, "Invalid ticketId");
         _;
     }
 
@@ -54,7 +54,6 @@ contract Ticket {
      */
     function add(address owner, uint256 eventId, uint256 price, category cat, uint256 seatid) public returns (uint256) {
         require(price > 0, "Ticket price cannot be less then 0");
-        // TODO: require user has enough tokens to purchase ticket (if ticket handles purchase)
 
         ticket memory newTicket = ticket(owner,
                                          address(0),
@@ -85,7 +84,7 @@ contract Ticket {
      * param ticketID ID of ticket to transfer
      * param transferTo address to transfer ticket to
      */
-    function transferTicket(uint256 ticketId, address transferTo) public validTicketId(ticketId) {
+    function transferTicket(uint256 ticketId, address transferTo) public validTicketId(ticketId) ownerOnly(ticketId) {
         require(msg.sender == platformAddress || transferTo == platformAddress, "User to user transfers are diasllowed");
         tickets[ticketId].prevowner = tickets[ticketId].owner;
         tickets[ticketId].owner = transferTo;

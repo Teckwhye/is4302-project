@@ -209,7 +209,6 @@ contract Platform {
                     ticketContract.transferTicket(ticketId, bidderList[i]); 
                     ticketId++;
                     ticketsLeft--;
-                    //burnToken()
                 } else { 
                     // return ETH back to unsuccessful bidders when ticketsLeft == 0 
                     address payable recipient = address(uint168(bidderList[i]));
@@ -252,7 +251,7 @@ contract Platform {
     }
 
     /**
-     * allow buyers to buy avaiable (unsold/refunded) tickets after bidding session has closed
+     * allow buyers to buy available (unsold/refunded) tickets after bidding session has closed
      *
      * param eventId    id of event
      * param quantity   quantity of tickets
