@@ -155,7 +155,7 @@ struct eventObj {
 }
 ```
 
-The Ticket data structure stores important information of a ticket such as owner, prevOwner, eventId, price, category and seatId. Ownership of tickets are easily verifiable through the owner field and ticket are loosely coupled with an event through the eventId field. More specific details about the individual ticket such as category and seatId also also included.
+The Ticket data structure stores important information of a ticket such as owner, prevOwner, eventId, price, category and seatId. Ownership of tickets are easily verifiable through the owner field and ticket are loosely coupled with an event through the eventId field. More specific details about the individual ticket such as category and seatId are also included.
 ```
 struct ticket {
     address owner;
