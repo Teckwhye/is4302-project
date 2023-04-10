@@ -338,7 +338,7 @@ contract("Platform", function (accounts) {
         assert.strictEqual(owner3, accounts[4]);
         let owner4 = await ticketInstance.getTicketOwner(13); // ticketId 11,12,13 belongs to accounts[4] 
         assert.strictEqual(owner4, accounts[4]);
-        let owner5 = await ticketInstance.getTicketOwner(14); // ticketId 15 belongs to accounts[3] 
+        let owner5 = await ticketInstance.getTicketOwner(14); // ticketId 14 belongs to accounts[3] 
         assert.strictEqual(owner5, accounts[3]);
 
         // Seller ends event

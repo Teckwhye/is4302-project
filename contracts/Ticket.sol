@@ -14,18 +14,19 @@ contract Ticket {
 
     /**
      * param owner     address of the owner of the ticket
+     * param prevOwner address of the previous owner of the ticket
      * param eventId   id of the event the ticket belongs to
-     * param price     Price of ticket in tokens
+     * param price     price of ticket in tokens
      * param cat       category of ticket 
-     * param seatid    assigned seat/zone 
+     * param seatId    assigned seat/zone 
      */
     struct ticket {
         address owner;
-        address prevowner;
+        address prevOwner;
         uint256 eventId; // event is a keyword
         uint256 price;
         category cat;
-        uint256 seatid;
+        uint256 seatId;
     }
 
     uint256 public numTickets = 0;  // Total number of tickets
@@ -86,7 +87,7 @@ contract Ticket {
      */
     function transferTicket(uint256 ticketId, address transferTo) public validTicketId(ticketId) ownerOnly(ticketId) {
         require(msg.sender == platformAddress || transferTo == platformAddress, "User to user transfers are diasllowed");
-        tickets[ticketId].prevowner = tickets[ticketId].owner;
+        tickets[ticketId].prevOwner = tickets[ticketId].owner;
         tickets[ticketId].owner = transferTo;
     }
 
@@ -95,7 +96,7 @@ contract Ticket {
     }
 
     function getTicketPrevOwner(uint256 ticketId) public view validTicketId(ticketId) returns (address) {
-        return tickets[ticketId].prevowner;
+        return tickets[ticketId].prevOwner;
     }
 
     /**
@@ -135,7 +136,7 @@ contract Ticket {
      * return uint256 seatid of ticket
      */
     function getTicketSeat(uint256 ticketId) public view validTicketId(ticketId) returns (uint256) {
-        return tickets[ticketId].seatid;
+        return tickets[ticketId].seatId;
     }
     
 }
