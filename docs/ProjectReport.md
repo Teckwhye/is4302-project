@@ -116,10 +116,10 @@ The team exercises data segregation and separation with these implementation of 
 
 #### Account Management
 
-`Account.Sol` stores three main information for accounts.
-1) **state** : whether an account is verified or not
-2) **verifier** : the certifier that verified the account
-3) **certified** : whether an account is certified to verify other address
+`Account.Sol` stores three main information for accounts.  
+1. **state** : whether an account is verified or not
+2. **verifier** : the certifier that verified the account
+3. **certified** : whether an account is certified to verify other address
 
 These information are stored in a mapping where the key is the address and the value would be the account object.
 
