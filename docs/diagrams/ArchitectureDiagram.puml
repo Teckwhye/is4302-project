@@ -3,14 +3,14 @@ skinparam actorStyle awesome
 skinparam packageStyle rectangle
 
 left to right direction
-"Organiser"  as Organiser #79dbf0
+"Seller"  as Seller #79dbf0
 "Certifier" as Certifier #9fd22a
 "Buyer" as Buyer #45818e
 "Account.sol" as Account #d5554c
 
 Buyer --> EventTokenMarket.sol
 rectangle Platform.sol #a561cc {
-  Organiser --> (listEvent)
+  Seller --> (listEvent)
   (listEvent) --> (commenceBidding)
   (commenceBidding) --> (bid)
   (bid) --> (closeBidding)
