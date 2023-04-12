@@ -12,12 +12,13 @@ Buyer --> EventTokenMarket.sol
 rectangle Platform.sol #a561cc {
   Seller --> (listEvent)
   (listEvent) --> (commenceBidding)
-  (commenceBidding) --> (bid)
-  (bid) --> (closeBidding)
-  (closeBidding) --> (buyTickets)
-  (buyTickets) --> (endEvent)
-  Buyer <--> (buyTickets)
-  Buyer -right-> (bid)
+  (commenceBidding) --> (placeBid/updateBid)
+  (placeBid/updateBid) --> (closeBidding)
+  (closeBidding) --> (buyTickets/refundTicket)
+  (buyTickets/refundTicket) --> (sellerEndEvent)
+  (sellerEndEvent) --> (platformEndEvent)
+  Buyer <--> (buyTickets/refundTicket)
+  Buyer -right-> (placeBid/updateBid)
 }
 
 rectangle Event.sol #ff7373 {
@@ -35,8 +36,16 @@ rectangle Account.sol #c0d6e4 {
   Account --> (certifyAccount)
 }
 
-EventTokenMarket.sol <-up-> EventTokenMarketAlgorithm.sol
-EventTokenMarket.sol -up-> ERC20.sol
+EventTokenMarket.sol <-down-> EventTokenMarketAlgorithm.sol
+EventToken.sol --> ERC20.sol
+EventToken.sol --> EventTokenMarket.sol
+
+rectangle EventToken.sol #93dc7f {
+    (platformEndEvent) --> (mintToken)
+    (mintToken) --> (Buyer)
+    (approveToken)
+    (burnToken)
+}
 
 rectangle EventTokenMarket.sol #b4eeb4 {
     (list)
