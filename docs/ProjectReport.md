@@ -34,7 +34,8 @@
         * [Close Bidding](#close-bidding)
         * [Ticket Purchase](#ticket-purchase)
         * [Ticket Refund](#ticket-refund)
-    * [Event End](#event-end)
+    * [Seller Event End](#seller-event-end)
+    * [Platform Event End](#platform-event-end)
     * [Tokenomics](#tokenomics)
         * [Token Supply and Distribution](#token-supply-and-distribution)
         * [Token Utility](#token-utility)
@@ -44,6 +45,7 @@
         * [EventToken Delist](#eventtoken-delist)
         * [EventToken Purchase](#eventtoken-purchase)
         * [Market Algorithm](#market-algorithm)
+* [Future Implementation Ideas](#future-implementation-ideas)   
 
 ## Introduction
 
@@ -444,7 +446,7 @@ Although a Buyer can possibly keep the purchase price of EventTokens to be low b
 
 EventTokenMarket tries to prevent foulplay by not allowing Buyers to choose who they sell their EventTokens to or who they purchase their EventTokens from. As Buyers are also unable to set their own price for their EventTokens, it is unlikely they are able to manupilate the market too.
 
-### Future Implementation Ideas
+## Future Implementation Ideas
 
 * Giveaway event-related NFT to the top bidder(s) at selected events.
 * Staking of EventTokens.
