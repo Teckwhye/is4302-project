@@ -92,7 +92,7 @@ contract("Platform", function (accounts) {
             platformInstance.commenceBidding(999, {from: accounts[1]}),
             "Invalid eventId"
         );
-    })
+    });
 
     it ("Incorrect sequence of bidding", async () => {
         // Cant bid before bidding commenced
@@ -100,7 +100,7 @@ contract("Platform", function (accounts) {
             platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth}),
             "Event not open for bidding"
         );
-    })
+    });
 
     it("Commence Bidding", async () => {
         let bidCommenced = await platformInstance.commenceBidding(latestEventId, {from: accounts[1]});
@@ -135,14 +135,40 @@ contract("Platform", function (accounts) {
             platformInstance.placeBid(latestEventId, 4, 50, {from: accounts[2], value: oneEth}),
             "Buyer has insufficient EventTokens"
         );
-    })
+    });
 
     it("Place Bidding", async () => {
         let bidPlaced = await platformInstance.placeBid(latestEventId, 1, 0, {from: accounts[2], value: oneEth});
         truffleAssert.eventEmitted(bidPlaced, "BidPlaced");
     });
 
-    it ("Incorrect Close Bidding", async () => {
+    it("Incorrect update bidding", async () => {
+        // Lower or equal token
+        await truffleAssert.reverts(
+            platformInstance.updateBid(latestEventId, 0, {from: accounts[2]}),
+            "New token bid must be higher than current bid"
+        );
+
+        // Insufficient EventTokens
+        await truffleAssert.reverts(
+            platformInstance.updateBid(latestEventId, 999, {from: accounts[2]}),
+            "Buyer has insufficient EventTokens to update bid"
+        );
+    });
+
+    it("Update Bidding", async () => {
+        // Generate 1 token for accounts[2]
+        await eventTokenInstance.getTokenForTesting(accounts[2], 1, {from: accounts[0]});
+        
+        let updateBid = await platformInstance.updateBid(latestEventId, 1, {from: accounts[2]});
+        truffleAssert.eventEmitted(updateBid, "BidUpdate");
+
+        // Ensure that account EventToken amount is consistent
+        const acc2token = new BigNumber(await eventTokenInstance.checkEventToken({from: accounts[2]}));
+        await assert(acc2token.isEqualTo(BigNumber(0)), "EventToken not burned");
+    });
+
+    it("Incorrect Close Bidding", async () => {
         // Not seller of event
         await truffleAssert.reverts(
             platformInstance.closeBidding(latestEventId, {from: accounts[9]}),
@@ -154,7 +180,7 @@ contract("Platform", function (accounts) {
             platformInstance.commenceBidding(999, {from: accounts[1]}),
             "Invalid eventId"
         );
-    })
+    });
 
     it("Close Bidding", async () => {
         let bidClosed = await platformInstance.closeBidding(latestEventId, {from: accounts[1]});
@@ -163,26 +189,68 @@ contract("Platform", function (accounts) {
         // enum bidState[2]
         let bidState = await eventInstance.getEventState(latestEventId);
         await assert.equal(bidState, 2, "Bidding not closed");
+
+        let owner = await ticketInstance.getTicketOwner(0); // ticketId 0 belongs to accounts[2]
+         assert.strictEqual(owner, accounts[2]);
+    });
+
+    it("Incorrect ticket buying", async () => {
+        // Insufficent funds to buy tickets
+        await truffleAssert.reverts(
+            platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: 0}),
+            "Buyer has insufficient ETH to buy tickets"
+        );
+
+        // Quanatity > 4
+        await truffleAssert.reverts(
+            platformInstance.buyTickets(latestEventId, 10, {from: accounts[3], value: oneEth.dividedBy(4)}),
+            "You have passed the maximum bulk purchase limit"
+        );
     });
 
     it("Buy Ticket", async () => {
         let buyTicket = await platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: oneEth.dividedBy(4)});
         truffleAssert.eventEmitted(buyTicket, "BuyTicket");
+
+         // Ensure accurate ticket distribution; note: buying is ticketId in reverse order. 5 tickets => 0 - 4 ticketId
+         let owner = await ticketInstance.getTicketOwner(4); // ticketId 4 belongs to accounts[3]
+         assert.strictEqual(owner, accounts[3]);
     });
 
-    it("Insufficent funds to buy tickets", async () => {
+    it("Incorrect ticket transfer", async () => {
+        // Not owner of ticket
         await truffleAssert.reverts(
-            platformInstance.buyTickets(latestEventId, 1, {from: accounts[3], value: 0}),
-            "Buyer has insufficient ETH to buy tickets"
+            ticketInstance.transferTicket(0, platformInstance.address, {from: accounts[3]}),
+            "Not owner of ticket"
+        );
+
+        // Unable to transfer to other users
+        await truffleAssert.reverts(
+            ticketInstance.transferTicket(0, accounts[3], {from: accounts[2]}),
+            "User to user transfers are diasllowed"
+        );
+
+        // Invalid ticketId
+        await truffleAssert.reverts(
+            ticketInstance.transferTicket(999, platformInstance.address, {from: accounts[3]}),
+            "Invalid ticketId"
         );
     });
 
-    it("Quantity exceeded", async () => {
-        // Maximum ticket purchase limit is set to 4
-        await truffleAssert.reverts(
-            platformInstance.buyTickets(latestEventId, 10, {from: accounts[3], value: oneEth.dividedBy(4)}),
-            "You have passed the maximum bulk purchase limit"
-        );
+    it("Transfer and Refund ticket", async () => {
+        await ticketInstance.transferTicket(0, platformInstance.address, {from: accounts[2]});
+        
+        let initialbalance = new BigNumber(await web3.eth.getBalance(accounts[2]));
+        let refundTicket1 = await platformInstance.refundTicket(0, {from: accounts[2]});
+        truffleAssert.eventEmitted(refundTicket1, "RefundTicket");
+        let gasUsed = new BigNumber(refundTicket1.receipt.gasUsed);
+        let tx = await web3.eth.getTransaction(refundTicket1.tx);
+        let gasPrice = new BigNumber(tx.gasPrice);
+
+        let finalbalance = new BigNumber(await web3.eth.getBalance(accounts[2]));
+        let halfPriceOfTicket = new BigNumber(await eventInstance.getEventTicketPrice(latestEventId)).dividedBy(2);
+        // Initial - GasFees + Refund = Final ====> Initial - GasFees = Final - Refund
+        await assert((finalbalance.minus(halfPriceOfTicket)).isEqualTo((initialbalance.minus(gasPrice.multipliedBy(gasUsed)))), "Did not return ETH back to refunder");
     });
 
     it("Return ETH back to buyer if msg.value > priceOfTickets", async () => {
@@ -270,7 +338,7 @@ contract("Platform", function (accounts) {
         assert.strictEqual(owner3, accounts[4]);
         let owner4 = await ticketInstance.getTicketOwner(13); // ticketId 11,12,13 belongs to accounts[4] 
         assert.strictEqual(owner4, accounts[4]);
-        let owner5 = await ticketInstance.getTicketOwner(14); // ticketId 15 belongs to accounts[3] 
+        let owner5 = await ticketInstance.getTicketOwner(14); // ticketId 14 belongs to accounts[3] 
         assert.strictEqual(owner5, accounts[3]);
 
         // Seller ends event

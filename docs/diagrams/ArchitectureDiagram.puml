@@ -3,21 +3,22 @@ skinparam actorStyle awesome
 skinparam packageStyle rectangle
 
 left to right direction
-"Organiser"  as Organiser #79dbf0
+"Seller"  as Seller #79dbf0
 "Certifier" as Certifier #9fd22a
 "Buyer" as Buyer #45818e
 "Account.sol" as Account #d5554c
 
 Buyer --> EventTokenMarket.sol
 rectangle Platform.sol #a561cc {
-  Organiser --> (listEvent)
+  Seller --> (listEvent)
   (listEvent) --> (commenceBidding)
-  (commenceBidding) --> (bid)
-  (bid) --> (closeBidding)
-  (closeBidding) --> (buyTickets)
-  (buyTickets) --> (endEvent)
-  Buyer <--> (buyTickets)
-  Buyer -right-> (bid)
+  (commenceBidding) --> (placeBid/updateBid)
+  (placeBid/updateBid) --> (closeBidding)
+  (closeBidding) --> (buyTickets/refundTicket)
+  (buyTickets/refundTicket) --> (sellerEndEvent)
+  (sellerEndEvent) --> (platformEndEvent)
+  Buyer <--> (buyTickets/refundTicket)
+  Buyer -right-> (placeBid/updateBid)
 }
 
 rectangle Event.sol #ff7373 {
@@ -35,8 +36,16 @@ rectangle Account.sol #c0d6e4 {
   Account --> (certifyAccount)
 }
 
-EventTokenMarket.sol <-up-> EventTokenMarketAlgorithm.sol
-EventTokenMarket.sol -up-> ERC20.sol
+EventTokenMarket.sol <-down-> EventTokenMarketAlgorithm.sol
+EventToken.sol --> ERC20.sol
+EventToken.sol --> EventTokenMarket.sol
+
+rectangle EventToken.sol #93dc7f {
+    (platformEndEvent) --> (mintToken)
+    (mintToken) --> (Buyer)
+    (approveToken)
+    (burnToken)
+}
 
 rectangle EventTokenMarket.sol #b4eeb4 {
     (list)
