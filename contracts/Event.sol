@@ -29,7 +29,7 @@ contract Event {
      * param ticketsLeft    event tickets left 
      * param priceOfTicket  price of ticket will be seller list price * 50,000 wei
      * param seller         organiser / seller of event ticket   
-    * param eventState     state of event: initial, bidding, buyAndRefund, sellerEventEnd, platformEventEnd
+     * param eventState     state of event: initial, bidding, buyAndRefund, sellerEventEnd, platformEventEnd
      * param firstTicketId  id of first ticket sold
      */
     struct eventObj {
